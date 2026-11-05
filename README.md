@@ -32,6 +32,20 @@ Vitest, Testing Library, Playwright, optional Capacitor (Android APK). Full tabl
 - video/       script, footage, final cut
 - submission/  entry form answers and video link
 
-## Getting started
-This folder is not a git repository yet. Run `git init` before the first milestone (CLAUDE.md asks for a commit
-after each one). App setup notes are in app/README.md.
+## Run, test, build
+Needs Node 20+ (built with Node 24). From `app/`:
+
+| Command | What it does |
+| --- | --- |
+| `npm install` | Install packages (once) |
+| `npx playwright install chromium` | Browser for the end-to-end tests (once) |
+| `npm run dev` | Dev server at http://localhost:5173 |
+| `npm run check` | Type check + unit tests + content-pack validation. Run before every merge |
+| `npm run check:content` | Validate `content/*.json` only |
+| `npm run test:e2e` | Builds, then runs Playwright: full pendulum loop, saved progress, offline, screenshots |
+| `npm run build` | Production build in `app/dist` (deploy this folder) |
+
+Production build size (6 Nov): 2.1 MB precached for offline use (about 0.7 MB over the network), against a 15 MB budget.
+
+## Working in parallel
+See `docs/workplan.md` for the two lanes, file ownership and task order.

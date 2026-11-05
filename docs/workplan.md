@@ -44,12 +44,12 @@ Each task lists what it needs first and what "done" means. ✅ means merged.
 
 | # | Task | Needs | Done when |
 | --- | --- | --- | --- |
-| A1 | **Scaffold:** Vite + React + TS, Tailwind v4, PWA, Vitest, folder layout, `npm run check` | – | `npm run build` works and the app loads offline |
-| A2 | **Contracts:** template contract (`types.ts`), pack schema (zod), i18n setup, content validation script, pendulum content stub | A1 | `npm run check` validates `content/*.json`. **Unblocks B2 validation and B3** |
-| A3 | **Pendulum model + game rules:** `model.ts` with tests; pure `game/unlock.ts` and `game/scoring.ts` with tests | A2 | Tests in SDS 7.4 pass |
-| A4 | **Book shell:** table, book, cover → contents → spread, page turn, toolbar, palette, fonts, DEMO watermark | A1 | Screenshots at 915x412 and 412x915 |
-| A5 | **Pendulum spread:** pop-up scene, controls, run with fast-forward/Skip, notebook + SVG graph, game steps 1–6, flap unlock, zustand game store | A3, A4 | Full pendulum loop by hand. **Unblocks B4 and B5** |
-| A6 | **Storage, offline, lite mode:** Dexie progress, stickers and locks, unlock-all setting, lite mode, offline chip | A5 | Airplane-mode run works; lite mode toggles |
+| A1 ✅ | **Scaffold:** Vite + React + TS, Tailwind v4, PWA, Vitest, folder layout, `npm run check` | – | `npm run build` works and the app loads offline |
+| A2 ✅ | **Contracts:** template contract (`types.ts`), pack schema (zod), i18n setup, content validation script, pendulum content stub | A1 | `npm run check` validates `content/*.json`. **Unblocks B2 validation and B3** |
+| A3 ✅ | **Pendulum model + game rules:** `model.ts` with tests; pure `game/unlock.ts` and `game/scoring.ts` with tests | A2 | Tests in SDS 7.4 pass |
+| A4 ✅ | **Book shell:** table, book, cover → contents → spread, page turn, toolbar, palette, fonts, DEMO watermark | A1 | Screenshots at 915x412 and 412x915 |
+| A5 ✅ | **Pendulum spread:** pop-up scene, controls, run with fast-forward/Skip, notebook + SVG graph, game steps 1–6, flap unlock, zustand game store | A3, A4 | Full pendulum loop by hand. **Unblocks B4 and B5** |
+| A6 | **Storage, offline, lite mode:** Dexie progress, stickers and locks, unlock-all setting, lite mode, offline chip. *Done except a test on a real low-end phone* | A5 | Airplane-mode run works; lite mode toggles |
 | A7 | **Integration + performance:** merge B's work, Playwright tests, 15 MB check, 4x CPU throttle check | B4, B5 | SRS 5.2 checklist ticked except the filming items |
 
 ### Lane B (friend)
@@ -78,3 +78,36 @@ short clip of whatever runs.
 ## Finalist phase (10–18 Nov)
 
 Cikgu Silap (A), Ohm's law template (B), English pass (B), Capacitor APK (A), and feedback from 1–2 teachers (B).
+
+## Status and notes for Lane B (6 Nov, after A1-A5)
+
+Everything Lane B needs is now on `main`:
+- **B2 (content):** `content/fizik-t4.json` already holds the full pendulum page. Add the heating page next to it,
+  copying its shape. `npm run check:content` tells you exactly which field is wrong.
+- **B3 (heating model):** copy `app/src/experiments/pendulum/` as the pattern.
+  - `meta.ts`: control keys such as `time_s`, `mass_g`, `power_W`, `insulated` (toggle); quantities `t_s`, `theta_C`,
+    `dtheta_C`; graphs `theta-vs-t` (straight: false) and `dtheta-vs-t` (straight: true).
+  - `model.ts`: `simulate`, `measure(settings, rng)`, `runDuration` (the heating time itself; the run fast-forwards).
+  - Register it in `experiments/metas.ts` and `experiments/models.ts`.
+  - Unit test: the bundled pack's ranges never pass 95 °C.
+- **B4 (heating scene):** `Scene.tsx` gets `getState()` (call it inside `useFrame`), `settings`, `running` and `lite`.
+  Wrap each part in `<PopUp index={i}>` and use `<Part>` from `book/lineart.tsx` for the line-art look. Orange is for
+  heat flow only. Register it in `experiments/registry.ts`.
+- **B5 (class mode):** replace `app/src/classmode/ClassMode.tsx`. The entry flow already works: cover → Mod Kelas →
+  contents (locks ignored) → `screen === 'class'`. Use `applyPrediction` from `game/scoring.ts`, the page's
+  `classRounds`, and `templates[page.template]` for the run. The Stage currently shows the normal spread behind it;
+  ask Lane A for a class-mode camera framing (closer to the right page) when you get there.
+
+## Decisions log (settled without a meeting; change them if the team disagrees)
+
+| Topic | Decision | Why |
+| --- | --- | --- |
+| Variables step | Tap a slot button (M / R / K) on each chip instead of dragging | Works on touch and with accessibility tools; dragging is fiddly on small phones |
+| Short phones in landscape | The camera focuses the left page for reading steps and pans to the apparatus for the run | The whole open book made page text about 10 px on a 412 px-tall screen |
+| Phone portrait | One page at a time with a Konsep / Eksperimen switch | As in the build prompt 5.4 |
+| Lite mode | Keeps the crisp `<Html transform>` page; drops antialias, pixel ratio 2, idle drift and page curl | Simpler than a separate flat panel, and the page DOM is small |
+| Settings storage | localStorage; progress stays in Dexie (IndexedDB) | Settings must be ready on the first frame (language, lite mode) |
+| Sounds | Synthesised with Web Audio | No audio files to download or precache |
+| Human error in readings | On for students (±0.1-0.3 s over 20 swings) | Realistic readings; the unlock rule still passes (about 2% residual) |
+| Answer order | Options show in pack order for now | Shuffling is a small later change in `StepPanel.tsx` |
+| Postprocessing (Bloom) | Not used yet; the glow is a transparent sphere | Saves size and GPU on cheap phones; can be added for desktop later |

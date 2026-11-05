@@ -8,3 +8,5 @@ docs/textbooks/
 docs/reference/
 video/*.mp4
 video/*.mov
+test-results/
+playwright-report/

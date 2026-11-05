@@ -1,19 +1,27 @@
 # App
 
-Scaffold with Vite's react-ts template. This folder already holds this README, so
-`npm create vite@latest . -- --template react-ts` stops and asks what to do. Never choose "Remove existing files".
-Either scaffold into a temporary folder and move the files here, or move this README aside first.
+Vite 8 + React 19 + TypeScript 7 + React Three Fiber 9 + drei 10. Commands are in the root README.
 
-Then add:
-three @react-three/fiber @react-three/drei @react-spring/three @react-three/postprocessing framer-motion zustand
-tailwindcss @tailwindcss/vite clsx lucide-react katex dexie dexie-react-hooks zod vite-plugin-pwa
-@fontsource/fraunces @fontsource/inter @fontsource/jetbrains-mono
-Dev: vitest @testing-library/react @playwright/test
+## Where things are
 
-Notes:
-- Tailwind v4 is set up through the `@tailwindcss/vite` plugin, not a PostCSS config.
-- content/ and assets/ sit outside this folder: set `server.fs.allow: ['..']` in vite.config.ts and import them from code
-  so they are bundled and precached.
-- Workbox `globPatterns` must include glb, woff2, json and the sound format.
+| Folder | What | Owner |
+| --- | --- | --- |
+| `src/experiments/types.ts` | The template contract every experiment implements | A (frozen) |
+| `src/experiments/pendulum/` | Reference template: `meta.ts`, `model.ts` (+ test), `Scene.tsx` | A |
+| `src/experiments/metas.ts`, `models.ts`, `registry.ts` | Template lookups (B adds one line each for heating) | A |
+| `src/game/` | Game loop store, unlock rule, scoring, step panels | A |
+| `src/book/` | 3D table, book, camera, page turn, cover, contents, left page | A |
+| `src/ui/` | Toolbar, notebook + SVG graph, control panel, toasts, settings | A |
+| `src/storage/` | Pack schema (zod), bundled packs, Dexie progress | A |
+| `src/i18n/strings/<module>.ts` | One BM + EN dictionary per module | module owner |
+| `src/classmode/` | Class battle mode (placeholder now) | B |
+| `e2e/` | Playwright tests | both |
 
-Module folders under src/: shell, book, experiments, game, classmode, storage, i18n, ui (SDS section 7.2).
+## Notes
+- drei `<Html>` must portal into `htmlLayer` (see `book/PageHtml.tsx`), or pages render empty under React 19.
+  `<StrictMode>` is off for the same reason.
+- 3D page elements move with the idle drift, so Playwright clicks use `force: true` (see `e2e/helpers.ts`).
+- In dev, `window.__r3f` holds the R3F state for debugging.
+- Sounds are synthesised with Web Audio (`shell/sound.ts`); there are no audio files.
+- `scripts/make-icons.mjs` renders the PNG app icons from `public/icon.svg`;
+  `scripts/shot.mjs` takes quick headless screenshots against the dev server.
