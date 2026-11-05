@@ -1,1 +1,100 @@
 @import 'tailwindcss';
+
+/* Bundled fonts, Latin subset and only the weights we use (keeps the 15 MB budget). */
+@import '@fontsource/fraunces/latin-600.css';
+@import '@fontsource/fraunces/latin-600-italic.css';
+@import '@fontsource/inter/latin-400.css';
+@import '@fontsource/inter/latin-600.css';
+@import '@fontsource/jetbrains-mono/latin-500.css';
+
+@theme {
+  --color-table: #9db0a9;
+  --color-paper: #f7f2e7;
+  --color-paper-shade: #e9e1cf;
+  --color-ink: #262626;
+  --color-ink-soft: #6b6b6b;
+  --color-accent: #f26b1d;
+  --color-accent-glow: #ffb37a;
+  --color-cover: #d9a441;
+  --color-good: #2e8b57;
+  --color-bad: #c0392b;
+
+  --font-serif: 'Fraunces', Georgia, serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+:root {
+  --table: #9db0a9;
+  --paper: #f7f2e7;
+  --paper-shade: #e9e1cf;
+  --ink: #262626;
+  --ink-soft: #6b6b6b;
+  --accent: #f26b1d;
+  --accent-glow: #ffb37a;
+  --cover: #d9a441;
+  --good: #2e8b57;
+  --bad: #c0392b;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--table);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Paper card used by the floating panels. */
+.paper-card {
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.18);
+}
+
+/* A touch target is never smaller than 48 px (NFR-09). */
+.tap {
+  min-width: 48px;
+  min-height: 48px;
+}
+
+.shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* KaTeX: precache only woff2 (see vite.config.ts); the CSS still lists woff/ttf fallbacks. */

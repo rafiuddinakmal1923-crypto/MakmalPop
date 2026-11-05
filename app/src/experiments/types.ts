@@ -77,13 +77,18 @@ export interface TemplateModel<State> {
 }
 
 export interface SceneProps<State> {
-  state: State
+  /**
+   * Current scene state (model.simulate at the run clock). Call it inside useFrame; do not store it in
+   * React state, so the scene animates without re-rendering React every frame.
+   */
+  getState: () => State
   settings: Settings
   /** True while a run is playing. */
   running: boolean
   /** Lite mode: skip costly effects. */
   lite: boolean
 }
+// Wrap each apparatus part in <PopUp index={i}> (book/PopUp.tsx) so it rises out of the page in sequence.
 
 export interface ExperimentTemplate<State = unknown> extends TemplateModel<State> {
   Scene: ComponentType<SceneProps<State>>
