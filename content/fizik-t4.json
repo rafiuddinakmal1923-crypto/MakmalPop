@@ -1,0 +1,238 @@
+{
+  "packId": "fizik-t4-v1",
+  "version": "1.0.0",
+  "curriculum": "KSSM Fizik Tingkatan 4",
+  "pages": [
+    {
+      "pageId": "t4-bab1-bandul",
+      "template": "pendulum",
+      "chapter": {
+        "form": 4,
+        "number": 1,
+        "title": {
+          "ms": "Pengukuran",
+          "en": "Measurement"
+        }
+      },
+      "subtopic": {
+        "ms": "1.2 Penyiasatan Saintifik",
+        "en": "1.2 Scientific Investigation"
+      },
+      "title": {
+        "ms": "Bandul Ringkas",
+        "en": "Simple Pendulum"
+      },
+      "concept": [
+        {
+          "ms": "Bandul ringkas terdiri daripada ladung kecil yang digantung pada seutas tali ringan. Apabila ladung ditarik sedikit ke tepi dan dilepaskan, ia berayun ke kiri dan ke kanan.",
+          "en": "A simple pendulum is a small bob hung on a light string. When the bob is pulled slightly aside and released, it swings left and right."
+        },
+        {
+          "ms": "Masa untuk satu ayunan lengkap dipanggil tempoh, T. Untuk mengukur T dengan lebih jitu, kita masa 20 ayunan lengkap dan bahagikan dengan 20.",
+          "en": "The time for one complete oscillation is called the period, T. To measure T more precisely, we time 20 complete oscillations and divide by 20."
+        },
+        {
+          "ms": "Dalam eksperimen ini, anda mengubah panjang tali dan memerhati perubahan tempoh. Jisim ladung dan sudut ayunan dikekalkan.",
+          "en": "In this experiment you change the string length and watch how the period changes. The bob's mass and the swing angle stay the same."
+        }
+      ],
+      "mission": {
+        "ms": "Jam datuk di rumah Atuk lambat. Laraskan bandulnya supaya tepat semula!",
+        "en": "Atuk's old clock is running slow. Adjust its pendulum to fix it!"
+      },
+      "variables": {
+        "manipulated": "length",
+        "responding": "period",
+        "constant": [
+          "mass",
+          "amplitude"
+        ]
+      },
+      "ranges": {
+        "length_cm": [
+          20,
+          100
+        ],
+        "mass_g": [
+          50,
+          200
+        ],
+        "amplitude_deg": [
+          5,
+          10
+        ]
+      },
+      "prediction": {
+        "question": {
+          "ms": "Jika tali lebih panjang, tempoh ayunan akan...",
+          "en": "If the string is longer, the period will..."
+        },
+        "options": [
+          {
+            "ms": "bertambah",
+            "en": "increase"
+          },
+          {
+            "ms": "berkurang",
+            "en": "decrease"
+          },
+          {
+            "ms": "tidak berubah",
+            "en": "stay the same"
+          }
+        ],
+        "answer": 0
+      },
+      "explain": {
+        "question": {
+          "ms": "Kenapa tempoh bertambah apabila tali lebih panjang?",
+          "en": "Why does the period increase when the string is longer?"
+        },
+        "options": [
+          {
+            "ms": "Ladung bergerak dalam lengkok yang lebih panjang tetapi pecutannya tidak bertambah",
+            "en": "The bob travels a longer arc but its acceleration does not increase"
+          },
+          {
+            "ms": "Ladung menjadi lebih berat",
+            "en": "The bob becomes heavier"
+          },
+          {
+            "ms": "Graviti menjadi lebih lemah",
+            "en": "Gravity becomes weaker"
+          }
+        ],
+        "answer": 0
+      },
+      "formula": {
+        "latex": "T = 2\\pi\\sqrt{\\frac{l}{g}}",
+        "unlockGraph": "T2-vs-l"
+      },
+      "classRounds": [
+        {
+          "question": {
+            "ms": "Tali dipanjangkan. Tempoh akan...",
+            "en": "The string is made longer. The period will..."
+          },
+          "options": [
+            {
+              "ms": "bertambah",
+              "en": "increase"
+            },
+            {
+              "ms": "berkurang",
+              "en": "decrease"
+            },
+            {
+              "ms": "tidak berubah",
+              "en": "stay the same"
+            }
+          ],
+          "answer": 0
+        },
+        {
+          "question": {
+            "ms": "Ladung diganti dengan yang lebih berat. Tempoh akan...",
+            "en": "The bob is swapped for a heavier one. The period will..."
+          },
+          "options": [
+            {
+              "ms": "bertambah",
+              "en": "increase"
+            },
+            {
+              "ms": "berkurang",
+              "en": "decrease"
+            },
+            {
+              "ms": "tidak berubah",
+              "en": "stay the same"
+            }
+          ],
+          "answer": 2
+        },
+        {
+          "question": {
+            "ms": "Berapakah tempoh bagi tali 80 cm?",
+            "en": "What is the period for an 80 cm string?"
+          },
+          "options": [
+            {
+              "ms": "kira-kira 1.0 s",
+              "en": "about 1.0 s"
+            },
+            {
+              "ms": "kira-kira 1.8 s",
+              "en": "about 1.8 s"
+            },
+            {
+              "ms": "kira-kira 2.5 s",
+              "en": "about 2.5 s"
+            }
+          ],
+          "answer": 1,
+          "settings": {
+            "length_cm": 80
+          }
+        }
+      ],
+      "mistakes": [
+        {
+          "id": "parallax",
+          "reasons": [
+            {
+              "ms": "Mata tidak berserenjang dengan skala pembaris (ralat paralaks)",
+              "en": "The eye is not perpendicular to the ruler scale (parallax error)"
+            },
+            {
+              "ms": "Pembaris terlalu pendek",
+              "en": "The ruler is too short"
+            },
+            {
+              "ms": "Tali terlalu ringan",
+              "en": "The string is too light"
+            }
+          ],
+          "answer": 0
+        },
+        {
+          "id": "timing-one-oscillation",
+          "reasons": [
+            {
+              "ms": "Masa satu ayunan terlalu singkat, jadi ralat masa tindak balas menjadi besar",
+              "en": "One oscillation is too short to time, so reaction-time error becomes large"
+            },
+            {
+              "ms": "Ladung berayun terlalu laju",
+              "en": "The bob swings too fast"
+            },
+            {
+              "ms": "Jam randik rosak",
+              "en": "The stopwatch is broken"
+            }
+          ],
+          "answer": 0
+        },
+        {
+          "id": "large-amplitude",
+          "reasons": [
+            {
+              "ms": "Rumus T = 2π√(l/g) hanya tepat untuk sudut ayunan yang kecil",
+              "en": "The formula T = 2π√(l/g) only holds for small swing angles"
+            },
+            {
+              "ms": "Sudut besar menjadikan tali lebih panjang",
+              "en": "A large angle makes the string longer"
+            },
+            {
+              "ms": "Sudut besar mengurangkan jisim ladung",
+              "en": "A large angle reduces the bob's mass"
+            }
+          ],
+          "answer": 0
+        }
+      ],
+      "reviewedBy": null
+    }
+  ]
+}
