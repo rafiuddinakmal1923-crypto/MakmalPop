@@ -101,8 +101,8 @@ Cikgu Silap, the palette and type below) must be what stands out. Reference scre
 
 **Left page (concept page)**, laid out like a real textbook page, rendered with drei `<Html transform>` so text is crisp.
 `<Html transform>` cannot bend with a turning page and is costly on cheap phones, so: hide it while a page turns
-(the turning sheet shows plain paper), keep its DOM small, and in lite mode render the left page as a flat
-screen-space panel instead (section 5.6). It contains:
+(the turning sheet shows plain paper) and keep its DOM small. On short phone screens in landscape the camera
+focuses the left page for reading steps and pans to the apparatus for the run. It contains:
 - A small chapter label ("Bab 1 · Pengukuran")
 - A serif title ("Bandul Ringkas")
 - 2-4 short paragraphs
@@ -193,8 +193,8 @@ Suggest rotating to landscape with a small dismissible banner.
 - At least 32 px text and high contrast. No student devices needed.
 
 ### 5.6 Lite mode
-Still 3D, but cheaper: no postprocessing, half the pixel ratio, no idle drift, a simpler page turn (fade/slide),
-and the left page drawn as a flat screen-space panel instead of `<Html transform>`.
+Still 3D, but cheaper: no postprocessing, no antialias, pixel ratio 1, no idle drift, and a flat page turn (no curl).
+The left page keeps `<Html transform>` (its DOM is small; see the decisions log in `docs/workplan.md`).
 
 Lite mode turns on automatically when:
 - `navigator.deviceMemory` is reported and is 4 or less (it is missing on Safari and Firefox, so do not rely on it), or

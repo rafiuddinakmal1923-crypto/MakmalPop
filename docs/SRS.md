@@ -137,7 +137,7 @@ The hardest targets are size and speed on a cheap phone: they decide whether the
 | NFR-01 | Offline | 100% of MVP features run in airplane mode after first load | Airplane-mode test on camera |
 | NFR-02 | Size | First download at most 15 MB; each later content pack at most 2 MB | Build output size |
 | NFR-03 | Performance | First page interactive within 5 s and 3D at 30 fps or more on a 2–3 GB RAM Android phone | Test on a borrowed low-end phone |
-| NFR-04 | Low-spec fallback | A lite mode that keeps the 3D scene but drops postprocessing, halves the pixel ratio and flattens the left page; it turns on automatically on low-memory or slow devices and can be toggled | Manual test + 30 fps with 4x CPU throttle |
+| NFR-04 | Low-spec fallback | A lite mode that keeps the 3D scene but drops postprocessing, antialias, the high pixel ratio, idle drift and page curl; it turns on automatically on low-memory or slow devices and can be toggled | Manual test + 30 fps with 4x CPU throttle |
 | NFR-05 | Accuracy | Physics results match the textbook equations within rounding; every page is checked by a physics teacher before release | Unit tests on physics models + reviewer sign-off |
 | NFR-06 | Usability | A teacher starts class mode in under 30 s with no training | Timed test with one teacher |
 | NFR-07 | Readability | Class mode text readable from the back of a classroom: at least 32 px body text on projector layout | Projector test |
