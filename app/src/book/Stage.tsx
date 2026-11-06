@@ -152,7 +152,8 @@ export function Stage({ portrait, short }: { portrait: boolean; short: boolean }
     if (portrait) return { target: [PAGE_W / 2, PAGE_Y + 0.6, -0.2], width: PAGE_W * 1.05, depth: PAGE_D, fill: 0.96, height: 2.5 }
     // Class mode on a projector: closer to the right page, scoreboard still readable on the left.
     if (screen === 'class' && page && !portrait)
-      return { target: [PAGE_W * 0.3, PAGE_Y + 0.5, -0.1], width: BOOK_W * 0.82, depth: BOOK_D, fill: 0.95, vfill: 0.8, height: 2.4 }
+      // The book sits on the left ~60% of the screen; the class panel takes the right.
+      return { target: [1.9, PAGE_Y + 0.4, 0.1], width: BOOK_W, depth: BOOK_D, fill: 0.56, vfill: 0.84, height: 2.4 }
     if (short && page && (step === 'run' || step === 'mistakes'))
       return { target: [PAGE_W / 2 - 0.1, PAGE_Y + 0.7, -0.6], width: PAGE_W * 0.8, depth: PAGE_D * 0.7, fill: 0.3, vfill: 0.8, height: 2.6 }
     if (short && page) return { target: [-PAGE_W / 2 + 0.35, PAGE_Y, 0.55], width: PAGE_W * 1.3, depth: PAGE_D, fill: 0.62, vfill: 0.72 }

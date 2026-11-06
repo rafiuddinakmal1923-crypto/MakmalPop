@@ -5,14 +5,20 @@
 import { useSettings } from '../shell/settings'
 import type { Text } from '../storage/packSchema'
 import { book } from './strings/book'
+import { classmode } from './strings/classmode'
 import { common } from './strings/common'
 import { experiments } from './strings/experiments'
 import { game } from './strings/game'
 
-const modules = [common, book, game, experiments]
+const modules = [common, book, game, experiments, classmode]
 
 export type Lang = 'ms' | 'en'
-export type Key = keyof typeof common.ms | keyof typeof book.ms | keyof typeof game.ms | keyof typeof experiments.ms
+export type Key =
+  | keyof typeof common.ms
+  | keyof typeof book.ms
+  | keyof typeof game.ms
+  | keyof typeof experiments.ms
+  | keyof typeof classmode.ms
 
 const dict: Record<Lang, Record<string, string>> = {
   ms: Object.assign({}, ...modules.map((m) => m.ms)),
