@@ -58,11 +58,11 @@ Each task lists what it needs first and what "done" means. ✅ means merged.
 | # | Task | Needs | Done when |
 | --- | --- | --- | --- |
 | B1 | **Textbook check** (start now, no code): fill in `docs/textbook-check.md`. Covers subtopic names, 10 or 20 swings, which variable the 4.2 heating experiment changes, constants, and the Ohm's law subtopic | – | Every row has an answer and a page number |
-| B2 | **Content text** (start now): write the BM + EN text for the pendulum and heating pages in `content/fizik-t4.json`, following SDS 4.1. Covers concept paragraphs, mission, prediction, explain, 3 class rounds, mistakes with 3 reasons each | B1 helps; A2 to validate | `npm run check` passes and a BM speaker has read it |
-| B3 | **Heating model:** `experiments/heating/model.ts`, `meta.ts` and `model.test.ts`, following the pendulum model. Δθ = ηPt/(mc), η = 1.0 insulated / 0.85 not, cap at 100 °C | A2 (A3 as an example) | Tests pass, including "the bundled pack never passes 95 °C" |
-| B4 | **Heating scene:** `experiments/heating/Scene.tsx`. Block or beaker, immersion heater, thermometer, lagging toggle, orange heat-flow lines; register it in `registry.ts` | A5 | The heating spread runs and plots θ vs t, and unlocks on Δθ vs t |
-| B5 | **Class mode:** `classmode/`, covering 3 taps to start, 2 default teams (up to 4), one-tap prediction + stake, 3 `classRounds`, scoreboard, winner screen, 32 px+ text | A5 | Playwright: class mode with 2 teams on the pendulum |
-| B6 | **Video + form** (in parallel with everything): script and storyboard in `video/`; title and the 600-character solution in `submission/form-answers.md`; test Pandai in airplane mode; contact a rural teacher | – | Script ready by Sat night; filming on Sun |
+| B2 ✅ | **Content text** (start now): write the BM + EN text for the pendulum and heating pages in `content/fizik-t4.json`, following SDS 4.1. Covers concept paragraphs, mission, prediction, explain, 3 class rounds, mistakes with 3 reasons each | B1 helps; A2 to validate | `npm run check` passes and a BM speaker has read it |
+| B3 ✅ | **Heating model:** `experiments/heating/model.ts`, `meta.ts` and `model.test.ts`, following the pendulum model. Δθ = ηPt/(mc), η = 1.0 insulated / 0.85 not, cap at 100 °C | A2 (A3 as an example) | Tests pass, including "the bundled pack never passes 95 °C" |
+| B4 ✅ | **Heating scene:** `experiments/heating/Scene.tsx`. Block or beaker, immersion heater, thermometer, lagging toggle, orange heat-flow lines; register it in `registry.ts` | A5 | The heating spread runs and plots θ vs t, and unlocks on Δθ vs t |
+| B5 ✅ | **Class mode:** `classmode/`, covering 3 taps to start, 2 default teams (up to 4), one-tap prediction + stake, 3 `classRounds`, scoreboard, winner screen, 32 px+ text | A5 | Playwright: class mode with 2 teams on the pendulum |
+| B6 ½ | **Video + form** (in parallel with everything): script and storyboard in `video/`; title and the 600-character solution in `submission/form-answers.md`; test Pandai in airplane mode; contact a rural teacher | – | Script ready by Sat night; filming on Sun |
 
 ### Order on the calendar
 
@@ -116,3 +116,22 @@ Everything Lane B needs is now on `main`:
 | Human error in readings | On for students (±0.1-0.3 s over 20 swings) | Realistic readings; the unlock rule still passes (about 2% residual) |
 | Answer order | Shown in a fixed shuffled order per page and question (`game/shuffle.ts`) | Pack authors write the right answer first; a fixed order keeps tests and filming repeatable |
 | Postprocessing (Bloom) | Not used yet; the glow is a transparent sphere | Saves size and GPU on cheap phones; can be added for desktop later |
+
+## Status (6 Nov, evening): Lane B code done by Claude Code
+
+The owner asked Claude Code to do Lane B's code tasks too. On `main` now:
+- **B3 + B2:** heating model with 10 unit tests, and the heating page in `content/fizik-t4.json` (BM + EN).
+- **B4:** heating scene (heater coil, current, heat flow, thermometer, lagging) with its own Cikgu Silap.
+- **B5:** class battle mode: lobby with 2 default teams (up to 4), 3 rounds, stakes, scoreboard on the left page, winner.
+- **B6 (drafts):** `video/script.md` (4:45 shot list with BM narration and EN subtitles) and
+  `submission/form-answers.md` (titles and the 600-character solution, BM and EN, lengths checked).
+- Tests: 58 unit tests and 10 end-to-end tests pass (pendulum, heating, Cikgu Silap, class mode, offline, screens).
+
+**Still needs people (the friend's lane now):**
+1. **B1 textbook check** (`docs/textbook-check.md`): nothing is verified against the real books yet. Most urgent:
+   row 2 (10 or 20 swings) and row 6 (does 4.2 change time or mass?).
+2. **BM read-through** by a native speaker: both content pages, `i18n/strings/*.ts`, the video narration and the
+   form answers.
+3. **Real-phone test** on a 2-3 GB Android phone, on the deployed link, in airplane mode.
+4. **Filming** (Sun 8 Nov) with the shot list; **Pandai offline test**; **contact a rural teacher**.
+5. Paste the video link into the form and submit by Mon 9 Nov, 11.59 pm.
