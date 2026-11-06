@@ -61,13 +61,14 @@ function Variables({ page }: { page: Page }) {
   return (
     <div className="flex flex-col gap-1.5">
       <p className="text-[14px]">{t('variables.prompt')}</p>
-      <div className="flex justify-end gap-1 pr-0.5 text-[11px] text-ink-soft">
+      {/* A key instead of column headings: full names like "Manipulated" do not fit over 52 px buttons. */}
+      <p data-testid="slot-key" className="flex flex-wrap gap-x-3 gap-y-0.5 text-[12px] leading-snug text-ink-soft">
         {SLOTS.map((s) => (
-          <span key={s.slot} className="w-[52px] text-center leading-tight">
-            {t(s.key)}
+          <span key={s.slot} className="whitespace-nowrap">
+            <b className="font-mono text-ink">{s.short}</b> = {t(s.key)}
           </span>
         ))}
-      </div>
+      </p>
       {ids.map((id) => (
         <div key={`${id}-${shake}`} data-testid={`chip-${id}`} className={clsx('flex items-center gap-1', wrong && shake > 0 && 'shake')}>
           <span className="flex-1 rounded-full border-[1.5px] border-ink bg-white px-2.5 py-1 text-[14px] font-semibold">{tk(`var.${id}`)}</span>
