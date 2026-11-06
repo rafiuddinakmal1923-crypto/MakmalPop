@@ -64,7 +64,9 @@ interface GameState {
   place: (variableId: string, slot: Slot | undefined) => void
   checkVariables: () => boolean
   lockPrediction: (choice: number, stake: Stake) => void
-  setControl: (key: string, value: number) => void
+  setControl: (key: string, value: number | boolean) => void
+  /** Reset the experiment settings to the page defaults, then apply a patch (class-mode rounds). */
+  resetSettings: (patch?: Settings) => void
   startRun: () => void
   skipRun: () => void
   tick: (dtReal: number) => void
@@ -188,6 +190,12 @@ export const useGame = create<GameState>()((set, get) => ({
     set((s) => ({ settings: { ...s.settings, [key]: value } }))
   },
 
+  resetSettings: (patch) => {
+    const { page, run } = get()
+    if (!page || run.running) return
+    set({ settings: { ...defaultSettings(page), ...patch }, run: idleRun })
+  },
+
   startRun: () => {
     const { page, settings, run } = get()
     if (!page || run.running) return
@@ -202,7 +210,7 @@ export const useGame = create<GameState>()((set, get) => ({
   tick: (dtReal) => {
     const { run, page, settings, rng, readings } = get()
     if (!run.running || !page) return
-    const speed = run.t < LIVE_SECONDS ? 1 : FAST_FORWARD
+    const speed = run.t < LIVE_SECONDS ? 1 : (getModel(page.template).meta.fastForward ?? FAST_FORWARD)
     const t = run.t + dtReal * speed
     if (t < run.duration) {
       set({ run: { ...run, t } })

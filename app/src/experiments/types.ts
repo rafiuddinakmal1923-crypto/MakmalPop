@@ -66,6 +66,8 @@ export interface TemplateMeta {
   mistakeIds: string[]
   /** Optional: settings for the Cikgu Silap replay (all planted mistakes at once). */
   mistakeReplay?: Settings
+  /** Optional: how much faster than real time a run plays after the first few seconds (default 10). */
+  fastForward?: number
 }
 
 export interface TemplateModel<State> {

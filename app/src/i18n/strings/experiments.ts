@@ -1,6 +1,5 @@
 /**
  * Variable chips, quantity symbols and apparatus labels for every template.
- * Lane B: add the heating keys (var.time, var.temperatureRise, q.theta_C, label.heater, ...) in a block of your own.
  */
 export const experiments = {
   ms: {
@@ -18,6 +17,21 @@ export const experiments = {
     'label.bob': 'ladung',
     'label.rule': 'pembaris meter',
     'label.protractor': 'protraktor',
+    // heating
+    'var.time': 'Masa pemanasan',
+    'var.temperatureRise': 'Kenaikan suhu',
+    'var.power': 'Kuasa pemanas',
+    'var.material': 'Jenis bahan',
+    'q.time_s': 't',
+    'q.t_s': 't',
+    'q.theta_C': 'θ',
+    'q.dtheta_C': 'Δθ',
+    'label.beaker': 'bikar berisi air',
+    'label.heater': 'pemanas rendam',
+    'label.thermometer': 'termometer',
+    'label.power': 'bekalan kuasa',
+    'label.lagging': 'penebat',
+    'label.stirrer': 'pengacau',
   },
   en: {
     'var.length': 'String length',
@@ -33,5 +47,19 @@ export const experiments = {
     'label.bob': 'bob',
     'label.rule': 'metre rule',
     'label.protractor': 'protractor',
+    'var.time': 'Heating time',
+    'var.temperatureRise': 'Temperature rise',
+    'var.power': 'Heater power',
+    'var.material': 'Material',
+    'q.time_s': 't',
+    'q.t_s': 't',
+    'q.theta_C': 'θ',
+    'q.dtheta_C': 'Δθ',
+    'label.beaker': 'beaker of water',
+    'label.heater': 'immersion heater',
+    'label.thermometer': 'thermometer',
+    'label.power': 'power supply',
+    'label.lagging': 'lagging',
+    'label.stirrer': 'stirrer',
   },
 } as const

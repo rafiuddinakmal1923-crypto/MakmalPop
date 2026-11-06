@@ -233,6 +233,242 @@
         }
       ],
       "reviewedBy": null
+    },
+    {
+      "pageId": "t4-bab4-muatan-haba-tentu",
+      "template": "heating",
+      "chapter": {
+        "form": 4,
+        "number": 4,
+        "title": {
+          "ms": "Haba",
+          "en": "Heat"
+        }
+      },
+      "subtopic": {
+        "ms": "4.2 Muatan Haba Tentu",
+        "en": "4.2 Specific Heat Capacity"
+      },
+      "title": {
+        "ms": "Muatan Haba Tentu",
+        "en": "Specific Heat Capacity"
+      },
+      "concept": [
+        {
+          "ms": "Pemanas rendam membekalkan haba kepada air pada kadar tetap. Kuasa pemanas, P, ialah tenaga yang dibekalkan setiap saat.",
+          "en": "An immersion heater gives heat to the water at a steady rate. The heater's power, P, is the energy it supplies each second."
+        },
+        {
+          "ms": "Haba yang diserap, Q, menaikkan suhu air. Bahan yang berbeza memerlukan jumlah haba yang berbeza untuk naik 1 °C. Inilah muatan haba tentu, c.",
+          "en": "The heat absorbed, Q, raises the water's temperature. Different materials need different amounts of heat to rise by 1 °C. This is the specific heat capacity, c."
+        },
+        {
+          "ms": "Dalam eksperimen ini, anda mengubah masa pemanasan dan merekod kenaikan suhu. Jisim air dan kuasa pemanas dikekalkan.",
+          "en": "In this experiment you change the heating time and record the temperature rise. The mass of water and the heater power stay the same."
+        }
+      ],
+      "mission": {
+        "ms": "Air untuk kenduri di rumah Mak Long perlu dipanaskan, tetapi tenaga terhad. Siasat berapa lama masa diperlukan untuk menaikkan suhu air!",
+        "en": "The water for Mak Long's kenduri must be heated, but energy is limited. Find out how long it takes to raise the water's temperature!"
+      },
+      "variables": {
+        "manipulated": "time",
+        "responding": "temperatureRise",
+        "constant": [
+          "mass",
+          "power",
+          "material"
+        ]
+      },
+      "ranges": {
+        "time_s": [
+          60,
+          600
+        ],
+        "mass_g": [
+          400,
+          600
+        ]
+      },
+      "prediction": {
+        "question": {
+          "ms": "Jika air dipanaskan lebih lama, kenaikan suhunya akan...",
+          "en": "If the water is heated for longer, its temperature rise will..."
+        },
+        "options": [
+          {
+            "ms": "bertambah secara sekata",
+            "en": "increase steadily"
+          },
+          {
+            "ms": "tidak berubah",
+            "en": "stay the same"
+          },
+          {
+            "ms": "berkurang",
+            "en": "decrease"
+          }
+        ],
+        "answer": 0
+      },
+      "explain": {
+        "question": {
+          "ms": "Kenapa kenaikan suhu bertambah secara sekata dengan masa?",
+          "en": "Why does the temperature rise increase steadily with time?"
+        },
+        "options": [
+          {
+            "ms": "Pemanas membekalkan haba pada kadar tetap, jadi haba yang diserap berkadar dengan masa",
+            "en": "The heater supplies heat at a steady rate, so the heat absorbed is proportional to time"
+          },
+          {
+            "ms": "Air menjadi lebih berat apabila dipanaskan",
+            "en": "The water gets heavier as it is heated"
+          },
+          {
+            "ms": "Muatan haba tentu air berkurang apabila suhu naik",
+            "en": "The specific heat capacity of water falls as it warms"
+          }
+        ],
+        "answer": 0
+      },
+      "formula": {
+        "latex": "Q = mc\\Delta\\theta \\qquad \\Delta\\theta = \\frac{P}{mc}\\,t",
+        "unlockGraph": "dtheta-vs-t"
+      },
+      "classRounds": [
+        {
+          "question": {
+            "ms": "Masa pemanasan digandakan. Kenaikan suhu akan...",
+            "en": "The heating time is doubled. The temperature rise will..."
+          },
+          "options": [
+            {
+              "ms": "berganda",
+              "en": "double"
+            },
+            {
+              "ms": "tidak berubah",
+              "en": "stay the same"
+            },
+            {
+              "ms": "menjadi separuh",
+              "en": "halve"
+            }
+          ],
+          "answer": 0,
+          "settings": {
+            "time_s": 600
+          }
+        },
+        {
+          "question": {
+            "ms": "Jisim air digandakan, masa yang sama. Kenaikan suhu akan...",
+            "en": "The mass of water is doubled, same time. The temperature rise will..."
+          },
+          "options": [
+            {
+              "ms": "berganda",
+              "en": "double"
+            },
+            {
+              "ms": "tidak berubah",
+              "en": "stay the same"
+            },
+            {
+              "ms": "menjadi separuh",
+              "en": "halve"
+            }
+          ],
+          "answer": 2,
+          "settings": {
+            "time_s": 300,
+            "mass_g": 1000
+          }
+        },
+        {
+          "question": {
+            "ms": "Tanpa penebat, nilai c yang dikira daripada bacaan akan...",
+            "en": "With no insulation, the value of c worked out from the readings will be..."
+          },
+          "options": [
+            {
+              "ms": "lebih tinggi daripada nilai sebenar",
+              "en": "higher than the true value"
+            },
+            {
+              "ms": "sama dengan nilai sebenar",
+              "en": "the same as the true value"
+            },
+            {
+              "ms": "lebih rendah daripada nilai sebenar",
+              "en": "lower than the true value"
+            }
+          ],
+          "answer": 0,
+          "settings": {
+            "time_s": 300,
+            "insulated": 0
+          }
+        }
+      ],
+      "mistakes": [
+        {
+          "id": "thermometer-on-heater",
+          "reasons": [
+            {
+              "ms": "Termometer menyentuh pemanas, jadi bacaannya lebih tinggi daripada suhu air",
+              "en": "The thermometer touches the heater, so it reads higher than the water"
+            },
+            {
+              "ms": "Termometer terlalu panjang",
+              "en": "The thermometer is too long"
+            },
+            {
+              "ms": "Pemanas terlalu kecil",
+              "en": "The heater is too small"
+            }
+          ],
+          "answer": 0
+        },
+        {
+          "id": "no-stirring",
+          "reasons": [
+            {
+              "ms": "Air tidak dikacau, jadi suhunya tidak sekata dan bacaan tidak tepat",
+              "en": "The water is not stirred, so its temperature is uneven and the reading is wrong"
+            },
+            {
+              "ms": "Pengacau membuat air terlalu sejuk",
+              "en": "The stirrer makes the water too cold"
+            },
+            {
+              "ms": "Air tidak perlu dikacau jika pemanas kuat",
+              "en": "Water need not be stirred if the heater is strong"
+            }
+          ],
+          "answer": 0
+        },
+        {
+          "id": "no-insulation",
+          "reasons": [
+            {
+              "ms": "Tiada penebat, jadi haba hilang ke persekitaran dan nilai c menjadi terlalu tinggi",
+              "en": "No insulation, so heat is lost to the surroundings and c comes out too high"
+            },
+            {
+              "ms": "Penebat menjadikan air lebih berat",
+              "en": "Insulation makes the water heavier"
+            },
+            {
+              "ms": "Tanpa penebat air mendidih lebih cepat",
+              "en": "Without insulation the water boils sooner"
+            }
+          ],
+          "answer": 0
+        }
+      ],
+      "reviewedBy": null
     }
   ]
 }

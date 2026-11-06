@@ -26,5 +26,6 @@ describe('pack schema rejects bad packs', () => {
   it('rejects an unknown template', () => expect(bad((p) => (p.template = 'rocket'))).toBe(false))
   it('rejects a range wider than the model allows', () => expect(bad((p) => (p.ranges.amplitude_deg = [5, 30]))).toBe(false))
   it('rejects a curved unlock graph', () => expect(bad((p) => (p.formula.unlockGraph = 'T-vs-l'))).toBe(false))
+  it('rejects a control character in the formula', () => expect(bad((p) => (p.formula.latex = 'T = 2\pi	'))).toBe(false))
   it('rejects anything other than 3 class rounds', () => expect(bad((p) => p.classRounds.pop())).toBe(false))
 })
