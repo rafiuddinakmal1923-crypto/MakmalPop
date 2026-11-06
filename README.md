@@ -47,5 +47,11 @@ Needs Node 20+ (built with Node 24). From `app/`:
 
 Production build size (6 Nov): 2.1 MB precached for offline use (about 0.7 MB over the network), against a 15 MB budget.
 
+## Deploy
+`.github/workflows/ci.yml` runs `npm run check` and the Playwright tests on every pull request and push, and deploys
+`main` to GitHub Pages at `https://<user>.github.io/<repo>/`. One-time setup on GitHub: Settings → Pages → Build and
+deployment → Source: **GitHub Actions**. Open the deployed link once on each phone while online; after that it works
+in airplane mode.
+
 ## Working in parallel
 See `docs/workplan.md` for the two lanes, file ownership and task order.

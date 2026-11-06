@@ -50,6 +50,7 @@ Each task lists what it needs first and what "done" means. ✅ means merged.
 | A4 ✅ | **Book shell:** table, book, cover → contents → spread, page turn, toolbar, palette, fonts, DEMO watermark | A1 | Screenshots at 915x412 and 412x915 |
 | A5 ✅ | **Pendulum spread:** pop-up scene, controls, run with fast-forward/Skip, notebook + SVG graph, game steps 1–6, flap unlock, zustand game store | A3, A4 | Full pendulum loop by hand. **Unblocks B4 and B5** |
 | A6 | **Storage, offline, lite mode:** Dexie progress, stickers and locks, unlock-all setting, lite mode, offline chip. *Done except a test on a real low-end phone* | A5 | Airplane-mode run works; lite mode toggles |
+| A8 ✅ | **Extras done early:** Cikgu Silap bonus step, shuffled answer order, KaTeX loaded on demand, instant splash, class-mode camera and scoreboard slot, CI + GitHub Pages deploy | A5 | 7 e2e tests pass |
 | A7 | **Integration + performance:** merge B's work, Playwright tests, 15 MB check, 4x CPU throttle check | B4, B5 | SRS 5.2 checklist ticked except the filming items |
 
 ### Lane B (friend)
@@ -77,7 +78,7 @@ short clip of whatever runs.
 
 ## Finalist phase (10–18 Nov)
 
-Cikgu Silap (A), Ohm's law template (B), English pass (B), Capacitor APK (A), and feedback from 1–2 teachers (B).
+Ohm's law template (B), English pass (B), Capacitor APK (A), and feedback from 1–2 teachers (B). Cikgu Silap is already done (A8).
 
 ## Status and notes for Lane B (6 Nov, after A1-A5)
 
@@ -93,10 +94,14 @@ Everything Lane B needs is now on `main`:
 - **B4 (heating scene):** `Scene.tsx` gets `getState()` (call it inside `useFrame`), `settings`, `running` and `lite`.
   Wrap each part in `<PopUp index={i}>` and use `<Part>` from `book/lineart.tsx` for the line-art look. Orange is for
   heat flow only. Register it in `experiments/registry.ts`.
-- **B5 (class mode):** replace `app/src/classmode/ClassMode.tsx`. The entry flow already works: cover → Mod Kelas →
+- **Contract additions (optional, 6 Nov):** `TemplateMeta.mistakeReplay` and `SceneProps.mistakes` for Cikgu Silap.
+  Heating can leave them out; add them later if heating gets its own planted mistakes.
+- **B5 (class mode):** replace `app/src/classmode/ClassMode.tsx` (overlay) and `ClassLeftPage.tsx` (the scoreboard
+  on the left page; Stage already draws it there and moves the camera closer). Drive the experiment with
+  `useGame`'s `setControl`, `startRun` and `skipRun`. Show round options in `optionOrder(...)` order (game/shuffle). The entry flow already works: cover → Mod Kelas →
   contents (locks ignored) → `screen === 'class'`. Use `applyPrediction` from `game/scoring.ts`, the page's
   `classRounds`, and `templates[page.template]` for the run. The Stage currently shows the normal spread behind it;
-  ask Lane A for a class-mode camera framing (closer to the right page) when you get there.
+  the class-mode camera is in `book/Stage.tsx` (the `screen === 'class'` framing) if it needs tuning.
 
 ## Decisions log (settled without a meeting; change them if the team disagrees)
 
@@ -109,5 +114,5 @@ Everything Lane B needs is now on `main`:
 | Settings storage | localStorage; progress stays in Dexie (IndexedDB) | Settings must be ready on the first frame (language, lite mode) |
 | Sounds | Synthesised with Web Audio | No audio files to download or precache |
 | Human error in readings | On for students (±0.1-0.3 s over 20 swings) | Realistic readings; the unlock rule still passes (about 2% residual) |
-| Answer order | Options show in pack order for now | Shuffling is a small later change in `StepPanel.tsx` |
+| Answer order | Shown in a fixed shuffled order per page and question (`game/shuffle.ts`) | Pack authors write the right answer first; a fixed order keeps tests and filming repeatable |
 | Postprocessing (Bloom) | Not used yet; the glow is a transparent sphere | Saves size and GPU on cheap phones; can be added for desktop later |
