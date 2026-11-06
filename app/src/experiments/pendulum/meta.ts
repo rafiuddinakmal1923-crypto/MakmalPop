@@ -25,4 +25,16 @@ export const pendulumMeta: TemplateMeta = {
   mistakeIds: ['parallax', 'timing-one-oscillation', 'large-amplitude'],
   // Cikgu Silap replay: a 60 cm string swung at 30° (past the 10° cap), timed for one swing, ruler read at a slant.
   mistakeReplay: { length_cm: 60, amplitude_deg: 30, largeAngle: true },
+  // "Susun sendiri": slots match the scene (pivot at [0.2, 2.45, -1.1], rod at x = -1.0, rule at x = 0.85).
+  assembly: {
+    parts: [
+      // Marks sit at (or just in front of) where each part goes, spread out so 56 px marks never overlap.
+      { id: 'stand', slot: [-0.6, 0.15, -0.5] },
+      { id: 'clamp', slot: [-0.5, 2.6, -1.1], requires: ['stand'] },
+      { id: 'protractor', slot: [0.65, 2.45, -1.1], requires: ['clamp'] },
+      { id: 'bob', slot: [0.2, 1.2, -0.5], requires: ['clamp'] },
+      { id: 'rule', slot: [1.3, 0.9, -0.6] },
+    ],
+    distractors: ['beaker', 'thermometer'],
+  },
 }

@@ -3,7 +3,7 @@
  * Variables use tap-to-place (tap a slot button on each chip), which works on touch and for accessibility.
  */
 import clsx from 'clsx'
-import { ArrowRight, Coins, RotateCcw } from 'lucide-react'
+import { ArrowRight, Coins, RotateCcw, Wrench, Zap } from 'lucide-react'
 import { useState } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { getModel } from '../experiments/models'
@@ -33,21 +33,57 @@ function Btn({ className, ...p }: React.ButtonHTMLAttributes<HTMLButtonElement>)
 
 function Mission({ page }: { page: Page }) {
   const { t, tx } = useT()
-  const accept = useGame((s) => s.acceptMission)
+  const chooseMode = useGame((s) => s.chooseMode)
+  const canSetUp = !!getModel(page.template).meta.assembly
   return (
     <div className="flex flex-col gap-2">
+      {/* Mission and the two ways in come first, so the buttons are always visible; the concept follows. */}
+      <div className="rounded-lg border-[1.5px] border-dashed border-ink bg-white/70 p-2.5">
+        <div className="text-[12px] font-semibold uppercase tracking-wide text-ink-soft">{t('step.mission')}</div>
+        <p className="font-serif text-[16px] leading-snug">{tx(page.mission)}</p>
+      </div>
+      <p className="text-[13px] font-semibold text-ink-soft">{t('mission.choose')}</p>
+      <div className="flex gap-2">
+        <Btn data-testid="mission-direct" className="flex flex-1 flex-col items-center justify-center bg-white/70 py-1.5 leading-tight" onClick={() => chooseMode('direct')}>
+          <span className="flex items-center gap-1">
+            <Zap size={16} /> {t('mission.direct')}
+          </span>
+          <span className="text-[11px] font-normal text-ink-soft">{t('mission.directHint')}</span>
+        </Btn>
+        {canSetUp && (
+          <Btn data-testid="mission-setup" className="flex flex-1 flex-col items-center justify-center bg-ink py-1.5 leading-tight text-paper" onClick={() => chooseMode('setup')}>
+            <span className="flex items-center gap-1">
+              <Wrench size={16} /> {t('mission.setup')}
+            </span>
+            <span className="text-[11px] font-normal opacity-80">{t('mission.setupHint')}</span>
+          </Btn>
+        )}
+      </div>
+      <div className="mt-1 border-t border-ink/15 pt-2 text-[12px] font-semibold uppercase tracking-wide text-ink-soft">{t('page.concept')}</div>
       {page.concept.map((c, i) => (
         <p key={i} className="text-[14px] leading-snug">
           {tx(c)}
         </p>
       ))}
-      <div className="mt-1 rounded-lg border-[1.5px] border-dashed border-ink bg-white/70 p-2.5">
-        <div className="text-[12px] font-semibold uppercase tracking-wide text-ink-soft">{t('step.mission')}</div>
-        <p className="font-serif text-[16px] leading-snug">{tx(page.mission)}</p>
+    </div>
+  )
+}
+
+function Setup({ page }: { page: Page }) {
+  const { t } = useT()
+  const placed = useGame((s) => s.placed.length)
+  const total = getModel(page.template).meta.assembly?.parts.length ?? 0
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-[14px] leading-snug">{t('setup.prompt')}</p>
+      <div className="flex items-center gap-1" aria-label={`${placed}/${total} ${t('setup.placed')}`}>
+        {Array.from({ length: total }, (_, i) => (
+          <span key={i} className={clsx('h-3 flex-1 rounded-full border border-ink', i < placed ? 'bg-ink' : 'bg-transparent')} />
+        ))}
       </div>
-      <Btn data-testid="mission-accept" className="mt-1 flex items-center justify-center gap-2 bg-ink text-paper" onClick={accept}>
-        {t('mission.start')} <ArrowRight size={18} />
-      </Btn>
+      <p className="font-mono text-[13px] text-ink-soft">
+        {placed}/{total} {t('setup.placed')}
+      </p>
     </div>
   )
 }
@@ -304,6 +340,8 @@ export function StepPanel({ page }: { page: Page }) {
   switch (step) {
     case 'mission':
       return <Mission page={page} />
+    case 'setup':
+      return <Setup page={page} />
     case 'variables':
       return <Variables page={page} />
     case 'predict':

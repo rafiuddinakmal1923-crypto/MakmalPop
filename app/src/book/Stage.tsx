@@ -110,8 +110,20 @@ function Experiment({ page, lite }: { page: Page; lite: boolean }) {
     () => (step === 'mistakes' ? { found, selected, onPick: selectMistake } : undefined),
     [step, found, selected, selectMistake],
   )
+  // "Susun sendiri": while the student builds the apparatus, the scene shows only placed parts and + markers.
+  const screen = useNav((s) => s.screen)
+  const placed = useGame((s) => s.placed)
+  const selectedPart = useGame((s) => s.selectedPart)
+  const dropPart = useGame((s) => s.dropPart)
+  const assembly = useMemo(
+    () =>
+      step === 'setup' && screen !== 'class'
+        ? { placed, selected: selectedPart, onSlot: (slot: string) => selectedPart && dropPart(selectedPart, slot) }
+        : undefined,
+    [step, screen, placed, selectedPart, dropPart],
+  )
   if (!tpl || !settings[tpl.meta.manipulatedControl]) return null
-  return <tpl.Scene getState={getState} settings={settings} running={running} lite={lite} mistakes={mistakes} />
+  return <tpl.Scene getState={getState} settings={settings} running={running} lite={lite} mistakes={mistakes} assembly={assembly} />
 }
 
 /** True `ms` after `on` became true (content appears once the cover has opened). */
@@ -154,7 +166,7 @@ export function Stage({ portrait, short }: { portrait: boolean; short: boolean }
     if (screen === 'class' && page && !portrait)
       // The book sits on the left ~60% of the screen; the class panel takes the right.
       return { target: [1.9, PAGE_Y + 0.4, 0.1], width: BOOK_W, depth: BOOK_D, fill: 0.56, vfill: 0.84, height: 2.4 }
-    if (short && page && (step === 'run' || step === 'mistakes'))
+    if (short && page && (step === 'run' || step === 'mistakes' || step === 'setup'))
       return { target: [PAGE_W / 2 - 0.1, PAGE_Y + 0.7, -0.6], width: PAGE_W * 0.8, depth: PAGE_D * 0.7, fill: 0.3, vfill: 0.8, height: 2.6 }
     if (short && page) return { target: [-PAGE_W / 2 + 0.35, PAGE_Y, 0.55], width: PAGE_W * 1.3, depth: PAGE_D, fill: 0.62, vfill: 0.72 }
     if (short) return { target: [0, PAGE_Y, 0.35], width: BOOK_W, depth: BOOK_D, fill: 0.92, vfill: 0.86 }

@@ -209,7 +209,14 @@ A zustand state machine with these steps, shown in the step strip in this order:
 **Misi → Pemboleh ubah → Ramal → Jalankan → Terangkan → Formula → Cikgu Silap (bonus)**
 
 1. **Misi (Mission):** a short local story card opens the spread (for example "Jam datuk di rumah Atuk lambat.
-   Laraskan bandulnya!" — "Atuk's old clock is slow. Adjust its pendulum!").
+   Laraskan bandulnya!" — "Atuk's old clock is slow. Adjust its pendulum!"). The student then picks one of two
+   ways in:
+   - **Uji terus** (test it now): the apparatus pops up ready and the loop continues with step 2.
+   - **Susun sendiri** (set it up myself): a **Susun radas** step comes first. The right page starts empty and an
+     equipment shelf shows the right pieces mixed with 2 that do not belong. The student drags each piece onto
+     its dashed + mark (or taps a piece, then a mark). Feedback teaches lab practice: "Radas ini tidak diperlukan"
+     (not needed), "Bukan di sini" (wrong place), "Letakkan X dahulu" (wrong order, for example the clamp before
+     the stand). A build with no mistakes earns +1. Class mode and Cikgu Silap always use the ready apparatus.
 2. **Pemboleh ubah (Variables):** the student drags the variable chips into three slots: dimanipulasikan
    (manipulated, exactly one), bergerak balas (responding, exactly one) and dimalarkan (kept constant, one or more).
    A wrong placement shakes the chip and shows "Ini bukan ujian yang adil" ("This isn't a fair test") with a hint.

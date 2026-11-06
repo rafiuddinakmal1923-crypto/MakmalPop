@@ -65,7 +65,7 @@ await reset()
 await page.waitForTimeout(1200)
 const popups = await read('page flip + pop-ups')
 
-await tap('mission-accept')
+await tap('mission-direct')
 for (const [id, slot] of [['length', 'manipulated'], ['period', 'responding'], ['mass', 'constant'], ['amplitude', 'constant']]) await tap(`place-${id}-${slot}`)
 await reset()
 await tap('variables-check')

@@ -98,3 +98,31 @@ button {
 }
 
 /* KaTeX: precache only woff2 (see vite.config.ts); the CSS still lists woff/ttf fallbacks. */
+
+/* "Susun sendiri" slot markers on the page: a dashed + where a piece of apparatus goes. */
+.slot-marker {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  border: 2.5px dashed var(--ink);
+  background: rgb(251 248 241 / 0.85);
+  color: var(--ink);
+  font: 600 28px/1 'Fraunces', serif;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.slot-marker--ready,
+.slot-marker--hover {
+  border-style: solid;
+  animation: slot-pulse 1s ease-in-out infinite;
+}
+.slot-marker--hover {
+  background: var(--ink);
+  color: var(--paper);
+  transform: scale(1.15);
+}
+@keyframes slot-pulse {
+  50% {
+    transform: scale(1.12);
+  }
+}

@@ -10,7 +10,9 @@ import { ACCENT, ACCENT_GLOW, INK, Part } from '../../book/lineart'
 import { htmlLayer } from '../../book/PageHtml'
 import { PopUp } from '../../book/PopUp'
 import { playTick } from '../../shell/sound'
+import { AssemblySlots } from '../AssemblySlots'
 import { Hotspot } from '../Hotspot'
+import { pendulumMeta } from './meta'
 import { useT } from '../../i18n'
 import type { SceneProps } from '../types'
 import { largeAnglePeriod, type PendulumState } from './model'
@@ -77,7 +79,7 @@ function PlantedMistakes({ mistakes, lengthM, ampDeg }: { mistakes: NonNullable<
   )
 }
 
-export function PendulumScene({ getState, settings, running, lite, mistakes }: SceneProps<PendulumState>) {
+export function PendulumScene({ getState, settings, running, lite, mistakes, assembly }: SceneProps<PendulumState>) {
   const { t } = useT()
   const swing = useRef<Group>(null)
   const bob = useRef<Mesh>(null)
@@ -130,75 +132,93 @@ export function PendulumScene({ getState, settings, running, lite, mistakes }: S
     return segs
   }, [])
 
+  // "Susun sendiri": only the parts the student has placed are shown; otherwise everything is ready.
+  const has = (id: string) => !assembly || assembly.placed.includes(id)
+
   return (
     <group>
-      {/* 0: stand base */}
-      <PopUp index={0}>
-        <Part position={[ROD_X + 0.55, 0.05, PIVOT[2]]}>
-          <boxGeometry args={[1.4, 0.08, 0.8]} />
-        </Part>
-      </PopUp>
-      {/* 1: rod and clamp */}
-      <PopUp index={1}>
-        <Part position={[ROD_X, (PIVOT[1] + 0.2) / 2, PIVOT[2]]}>
-          <cylinderGeometry args={[0.045, 0.045, PIVOT[1] + 0.2, 10]} />
-        </Part>
-        <Part position={[(ROD_X + PIVOT[0]) / 2, PIVOT[1], PIVOT[2]]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.035, 0.035, PIVOT[0] - ROD_X, 8]} />
-        </Part>
-        <Part position={[ROD_X, PIVOT[1], PIVOT[2]]}>
-          <boxGeometry args={[0.18, 0.16, 0.16]} />
-        </Part>
-        <Label position={[ROD_X, 0.9, PIVOT[2]]} text={t('label.stand')} />
-      </PopUp>
-      {/* 2: metre rule */}
-      <PopUp index={2}>
-        <Part position={[RULE_X, PIVOT[1] - UNIT_PER_M / 2, PIVOT[2]]}>
-          <boxGeometry args={[0.16, UNIT_PER_M + 0.1, 0.05]} />
-        </Part>
-        <Line points={ticks} segments color={INK} lineWidth={1} />
-        <Label position={[RULE_X + 0.1, PIVOT[1] - UNIT_PER_M * 0.75, PIVOT[2]]} text={t('label.rule')} />
-      </PopUp>
-      {/* 3: protractor, string and bob */}
-      <PopUp index={3}>
-        <group position={PIVOT}>
-          <mesh rotation={[0, 0, Math.PI]}>
-            <ringGeometry args={[0.26, 0.3, 24, 1, 0, Math.PI]} />
-            <meshBasicMaterial color="#fbf8f1" side={2} />
-          </mesh>
-          <Line
-            points={Array.from({ length: 25 }, (_, i) => {
-              const th = Math.PI + (Math.PI * i) / 24
-              return [Math.cos(th) * 0.3, Math.sin(th) * 0.3, 0] as [number, number, number]
-            })}
-            color={INK}
-            lineWidth={1}
-          />
-          {/* Orange arc trail: the motion of the bob. */}
-          <Line
-            ref={dash as never}
-            points={arc}
-            color={ACCENT}
-            lineWidth={2.5}
-            dashed
-            dashSize={0.08}
-            gapSize={0.06}
-            transparent
-            opacity={running ? 1 : 0.35}
-          />
-          <group ref={swing}>
-            <Line points={[[0, 0, 0], [0, -L, 0]]} color={INK} lineWidth={1.4} />
-            <Part ref={bob} position={[0, -L, 0]} edgeThreshold={80}>
-              <sphereGeometry args={[bobR, 20, 14]} />
-            </Part>
-            <mesh ref={glow} position={[0, -L, 0]} visible={false}>
-              <sphereGeometry args={[bobR * 1.35, 16, 12]} />
-              <meshBasicMaterial color={ACCENT_GLOW} transparent opacity={0.45} depthWrite={false} />
+      {/* stand: base and rod */}
+      {has('stand') && (
+        <PopUp index={0}>
+          <Part position={[ROD_X + 0.55, 0.05, PIVOT[2]]}>
+            <boxGeometry args={[1.4, 0.08, 0.8]} />
+          </Part>
+          <Part position={[ROD_X, (PIVOT[1] + 0.2) / 2, PIVOT[2]]}>
+            <cylinderGeometry args={[0.045, 0.045, PIVOT[1] + 0.2, 10]} />
+          </Part>
+          <Label position={[ROD_X, 0.9, PIVOT[2]]} text={t('label.stand')} />
+        </PopUp>
+      )}
+      {/* clamp: boss and arm */}
+      {has('clamp') && (
+        <PopUp index={1}>
+          <Part position={[(ROD_X + PIVOT[0]) / 2, PIVOT[1], PIVOT[2]]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.035, 0.035, PIVOT[0] - ROD_X, 8]} />
+          </Part>
+          <Part position={[ROD_X, PIVOT[1], PIVOT[2]]}>
+            <boxGeometry args={[0.18, 0.16, 0.16]} />
+          </Part>
+        </PopUp>
+      )}
+      {/* metre rule */}
+      {has('rule') && (
+        <PopUp index={2}>
+          <Part position={[RULE_X, PIVOT[1] - UNIT_PER_M / 2, PIVOT[2]]}>
+            <boxGeometry args={[0.16, UNIT_PER_M + 0.1, 0.05]} />
+          </Part>
+          <Line points={ticks} segments color={INK} lineWidth={1} />
+          <Label position={[RULE_X + 0.1, PIVOT[1] - UNIT_PER_M * 0.75, PIVOT[2]]} text={t('label.rule')} />
+        </PopUp>
+      )}
+      {/* protractor at the pivot */}
+      {has('protractor') && (
+        <PopUp index={3}>
+          <group position={PIVOT}>
+            <mesh rotation={[0, 0, Math.PI]}>
+              <ringGeometry args={[0.26, 0.3, 24, 1, 0, Math.PI]} />
+              <meshBasicMaterial color="#fbf8f1" side={2} />
             </mesh>
-            <Label position={[bobR, -L, 0]} text={t('label.bob')} />
+            <Line
+              points={Array.from({ length: 25 }, (_, i) => {
+                const th = Math.PI + (Math.PI * i) / 24
+                return [Math.cos(th) * 0.3, Math.sin(th) * 0.3, 0] as [number, number, number]
+              })}
+              color={INK}
+              lineWidth={1}
+            />
           </group>
-        </group>
-      </PopUp>
+        </PopUp>
+      )}
+      {/* string and bob, with the orange arc trail */}
+      {has('bob') && (
+        <PopUp index={4}>
+          <group position={PIVOT}>
+            <Line
+              ref={dash as never}
+              points={arc}
+              color={ACCENT}
+              lineWidth={2.5}
+              dashed
+              dashSize={0.08}
+              gapSize={0.06}
+              transparent
+              opacity={running ? 1 : 0.35}
+            />
+            <group ref={swing}>
+              <Line points={[[0, 0, 0], [0, -L, 0]]} color={INK} lineWidth={1.4} />
+              <Part ref={bob} position={[0, -L, 0]} edgeThreshold={80}>
+                <sphereGeometry args={[bobR, 20, 14]} />
+              </Part>
+              <mesh ref={glow} position={[0, -L, 0]} visible={false}>
+                <sphereGeometry args={[bobR * 1.35, 16, 12]} />
+                <meshBasicMaterial color={ACCENT_GLOW} transparent opacity={0.45} depthWrite={false} />
+              </mesh>
+              <Label position={[bobR, -L, 0]} text={t('label.bob')} />
+            </group>
+          </group>
+        </PopUp>
+      )}
+      {assembly && pendulumMeta.assembly && <AssemblySlots assembly={pendulumMeta.assembly} state={assembly} />}
       {mistakes && <PlantedMistakes mistakes={mistakes} lengthM={lengthM} ampDeg={ampDeg} />}
     </group>
   )

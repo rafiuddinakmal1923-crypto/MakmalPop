@@ -11,7 +11,7 @@ test('heating loop: θ vs t is rejected, Δθ vs t unlocks Q = mcΔθ', async ({
   await page.goto('/')
   await tap(page, 'cover-student')
   await tap(page, 'contents-t4-bab4-muatan-haba-tentu')
-  await tap(page, 'mission-accept')
+  await tap(page, 'mission-direct')
   for (const [id, slot] of [
     ['time', 'manipulated'],
     ['temperatureRise', 'responding'],

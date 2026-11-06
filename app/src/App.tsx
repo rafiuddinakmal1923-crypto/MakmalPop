@@ -15,6 +15,7 @@ import { allPages } from './storage/packs'
 import { ControlPanel } from './ui/ControlPanel'
 import { MistakePicker } from './ui/MistakePicker'
 import { Notebook } from './ui/Notebook'
+import { PartsShelf } from './ui/PartsShelf'
 import { DemoWatermark, FeedbackToast, RotateBanner, SettingsSheet } from './ui/Overlays'
 import { Toolbar } from './ui/Toolbar'
 
@@ -93,7 +94,8 @@ export default function App() {
   useGameForPage()
   useTapSounds()
   useEffect(() => {
-    if (step === 'mistakes') useNav.getState().setPortraitView('experiment')
+    // Portrait: Cikgu Silap and the apparatus set-up happen on the experiment page.
+    if (step === 'mistakes' || step === 'setup') useNav.getState().setPortraitView('experiment')
   }, [step])
 
   const page = spread > 0 ? allPages()[spread - 1] : null
@@ -130,6 +132,7 @@ export default function App() {
             <Notebook className={clsx('absolute bottom-[72px]', short ? 'w-[min(38vw,360px)]' : 'w-[min(46vw,440px)]', notebookSide)} />
             <ControlPanel className={clsx('absolute right-3 bottom-[72px]', short ? 'w-[min(27vw,250px)]' : 'w-[min(32vw,300px)]')} />
             <MistakePicker className={clsx('absolute bottom-[72px] left-3', short ? 'w-[min(38vw,360px)]' : 'w-[min(40vw,400px)]')} />
+            <PartsShelf className={clsx('absolute bottom-[72px] left-3', short ? 'w-[min(40vw,380px)]' : 'w-[min(40vw,420px)]')} />
           </>
         )}
         {inSpread && portrait && portraitView === 'experiment' && (
@@ -137,6 +140,7 @@ export default function App() {
             <ControlPanel />
             <Notebook />
             <MistakePicker />
+            <PartsShelf />
           </div>
         )}
 

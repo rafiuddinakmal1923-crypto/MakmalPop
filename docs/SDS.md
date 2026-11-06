@@ -239,10 +239,19 @@ V = IR \qquad R_{\text{series}} = R_1 + R_2 \qquad \frac{1}{R_{\text{parallel}}}
 
 The `GameLoop` is a state machine: mission → variables → predict and bet → run → explain → formula → sticker, with Cikgu Silap as an optional bonus step after the sticker. A wrong variable setup loops back, and the formula stays locked until the data supports it. Runs play live for a few seconds, then fast-forward (10x); a Skip button jumps to the reading. Locks apply to student mode only: class mode and the "unlock all" demo setting ignore them.
 
+### 6.0 Two ways to start
+
+After the mission the student chooses **Uji terus** (apparatus ready, loop as above) or **Susun sendiri**, which adds
+a set-up step before the variables. Each template's `meta.assembly` lists its parts (with a slot position in the
+scene and the parts each one needs first) and distractors. `game/assembly.ts` (pure, tested) judges each drop:
+not needed, wrong place, needs another part first, or placed. The scene shows only placed parts plus a dashed +
+mark per empty slot; the shelf supports drag-and-drop and tap-then-tap.
+
 ### 6.1 Scoring
 
 | Event | Points | Rule |
 | --- | --- | --- |
+| Apparatus set up with no mistakes (Susun sendiri only) | +1 | Any wrong piece, place or order earns 0 |
 | Variables set correctly on first try | +1 | Second try earns 0; a hint shows after a wrong try |
 | Prediction correct | + stake (1–3) | Stake chosen before the run |
 | Prediction wrong | − stake | Score never goes below 0 |

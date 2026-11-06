@@ -6,18 +6,21 @@ import clsx from 'clsx'
 import { Lock } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { StepPanel } from '../game/StepPanel'
-import { STEPS, useGame } from '../game/store'
+import { stepsFor, useGame } from '../game/store'
 import { useT } from '../i18n'
 import type { Page } from '../storage/packSchema'
 
 function StepStrip() {
   const { t, tk } = useT()
   const step = useGame((s) => s.step)
-  const current = step === 'done' || step === 'mistakes' ? STEPS.length : STEPS.indexOf(step)
+  const mode = useGame((s) => s.mode)
+  // Set-up mode adds a "Susun radas" step, so the strip has 7 circles instead of 6.
+  const steps = stepsFor(mode)
+  const current = step === 'done' || step === 'mistakes' ? steps.length : steps.indexOf(step)
   return (
     <div className="flex items-center gap-2">
       <ol className="flex gap-1" aria-label={t('score.label')}>
-        {STEPS.map((s, i) => (
+        {steps.map((s, i) => (
           <li
             key={s}
             title={tk(`step.${s}`)}

@@ -68,6 +68,22 @@ export interface TemplateMeta {
   mistakeReplay?: Settings
   /** Optional: how much faster than real time a run plays after the first few seconds (default 10). */
   fastForward?: number
+  /** Optional: the parts a student assembles in "Susun sendiri" (set it up myself) mode. */
+  assembly?: Assembly
+}
+
+/** One piece of apparatus the student drags onto the page. Its slot is where it goes, in the scene's own frame. */
+export interface AssemblyPart {
+  id: string
+  slot: [number, number, number]
+  /** Parts that must already be placed (for example the clamp needs the retort stand). */
+  requires?: string[]
+}
+
+export interface Assembly {
+  parts: AssemblyPart[]
+  /** Pieces on the shelf that do not belong in this experiment. */
+  distractors: string[]
 }
 
 export interface TemplateModel<State> {
@@ -96,6 +112,11 @@ export interface SceneProps<State> {
    * tapping one calls onPick(id). Templates without mistakes can ignore it.
    */
   mistakes?: { found: string[]; selected: string | null; onPick: (id: string) => void }
+  /**
+   * Optional: present only while the student assembles the apparatus. The scene shows only the placed parts and
+   * a + marker (data-slot) at each empty slot; tapping a marker calls onSlot(id). Absent = everything is ready.
+   */
+  assembly?: { placed: string[]; selected: string | null; onSlot: (slotId: string) => void }
 }
 // Wrap each apparatus part in <PopUp index={i}> (book/PopUp.tsx) so it rises out of the page in sequence.
 

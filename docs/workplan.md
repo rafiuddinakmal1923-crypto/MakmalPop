@@ -107,6 +107,7 @@ Everything Lane B needs is now on `main`:
 
 | Topic | Decision | Why |
 | --- | --- | --- |
+| Two ways to start | "Uji terus" (ready) or "Susun sendiri" (build it: shelf with 2 distractors, drag-and-drop or tap-then-tap onto + marks, order rules, +1 for a perfect build). Class mode and Cikgu Silap use the ready apparatus | The point is rural students who never handle apparatus: choosing and arranging it is part of the lab skill KSSM assesses |
 | Variables step | Tap a slot button (M / R / K) on each chip instead of dragging | Works on touch and with accessibility tools; dragging is fiddly on small phones |
 | Short phones in landscape | The camera focuses the left page for reading steps and pans to the apparatus for the run | The whole open book made page text about 10 px on a 412 px-tall screen |
 | Phone portrait | One page at a time with a Konsep / Eksperimen switch | As in the build prompt 5.4 |

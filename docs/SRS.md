@@ -107,6 +107,7 @@ Priority: **M** = must have for the competition video, **S** = should have, **C*
 | FR-24 | Explain: after the run, one short "why" question | M |
 | FR-25 | Discover the formula: the formula card unlocks only when the student picks the graph that their readings show is a straight line through the origin (at least 5 readings spread over at least 60% of the range; rule in SDS 6.2) | M |
 | FR-26 | Cikgu Silap: the student spots deliberate mistakes (parallax, zero error, too few oscillations) in a replayed experiment. A bonus step, not needed for the sticker | S |
+| FR-28 | Two ways to start every experiment: "Uji terus" (apparatus ready) or "Susun sendiri", where the student picks the right apparatus from a shelf with distractors and places each piece by drag-and-drop (or tap), in a sensible order, with hints | M |
 | FR-27 | Progress: completing an experiment (mission to formula) earns a sticker on the book page and unlocks the next experiment page | S |
 
 ### 3.4 Class battle mode

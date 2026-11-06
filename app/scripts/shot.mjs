@@ -16,6 +16,18 @@ for (const s of steps) {
   else if (kind === 'fill') { const [id, v] = arg.split('='); await page.getByTestId(id).fill(v, { force: true }) }
   else if (kind === 'reload') { await page.reload(); await page.waitForTimeout(2500) }
   else if (kind === 'unlockall') { await page.evaluate(() => localStorage.setItem('makmalpop-settings', JSON.stringify({ state: { lang: 'ms', liteOverride: null, sound: false, unlockAll: true, demoWatermark: true }, version: 0 }))); await page.reload(); await page.waitForTimeout(2500) }
+  else if (kind === 'drag') {
+    // drag:<part>=<slot> with a real mouse: press on the shelf card, move in steps, release on the + mark.
+    const [part, slot] = arg.split('=')
+    const a = await page.getByTestId(`part-${part}`).boundingBox()
+    const b = await page.getByTestId(`slot-${slot}`).boundingBox()
+    if (!a || !b) { console.log('drag: missing', part, slot); continue }
+    await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2)
+    await page.mouse.down()
+    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 12 })
+    if (process.env.SHOT_MIDDRAG) await page.screenshot({ path: `${outDir}/${process.env.SHOT_MIDDRAG}.png` })
+    await page.mouse.up()
+  }
   else if (kind === 'wait') await page.waitForTimeout(Number(arg))
   else if (kind === 'eval') console.log(JSON.stringify(await page.evaluate(arg)))
   else if (kind === 'shot') await page.screenshot({ path: `${outDir}/${arg}.png` })

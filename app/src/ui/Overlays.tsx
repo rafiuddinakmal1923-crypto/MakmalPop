@@ -96,7 +96,7 @@ function Confetti() {
 
 /** Short toast after an answer, with ding/thud and an orange confetti burst for correct answers. */
 export function FeedbackToast() {
-  const { t } = useT()
+  const { t, tk } = useT()
   const feedback = useGame((s) => s.feedback)
   const dismiss = useGame((s) => s.dismissFeedback)
   useEffect(() => {
@@ -121,7 +121,7 @@ export function FeedbackToast() {
       >
         <div className="font-serif text-[22px]">
           {feedback.kind === 'good' ? '✓ ' : '✗ '}
-          {t(feedback.key as Key)}
+          {t(feedback.key as Key).replace('{part}', feedback.vars?.part ? tk(`part.${feedback.vars.part}`) : '')}
         </div>
         {feedback.points !== undefined && (
           <div className={clsx('font-mono text-[16px]', feedback.points >= 0 ? 'text-good' : 'text-bad')}>

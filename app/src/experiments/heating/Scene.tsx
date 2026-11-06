@@ -14,7 +14,9 @@ import { htmlLayer } from '../../book/PageHtml'
 import { PopUp } from '../../book/PopUp'
 import { playBubble } from '../../shell/sound'
 import { useT } from '../../i18n'
+import { AssemblySlots } from '../AssemblySlots'
 import { Hotspot, type Mistakes } from '../Hotspot'
+import { heatingMeta } from './meta'
 import type { SceneProps } from '../types'
 import type { HeatingState } from './model'
 
@@ -75,7 +77,7 @@ function Flow({ start, end, mid, on, lite, speed = 1.2, width = 2.2 }: { start: 
   )
 }
 
-export function HeatingScene({ getState, settings, running, lite, mistakes }: SceneProps<HeatingState>) {
+export function HeatingScene({ getState, settings, running, lite, mistakes, assembly }: SceneProps<HeatingState>) {
   const { t } = useT()
   const coil = useRef<MeshLambertMaterial>(null)
   const column = useRef<Mesh>(null)
@@ -89,6 +91,8 @@ export function HeatingScene({ getState, settings, running, lite, mistakes }: Sc
   const hot = useMemo(() => new Color(ACCENT), [])
   const tmp = useMemo(() => new Color(), [])
   const waterTop = BEAKER[1] + WATER_H
+  // "Susun sendiri": only the parts the student has placed are shown; otherwise everything is ready.
+  const has = (id: string) => !assembly || assembly.placed.includes(id)
 
   useFrame(() => {
     const s = getState()
@@ -118,7 +122,8 @@ export function HeatingScene({ getState, settings, running, lite, mistakes }: Sc
   return (
     // Scaled up so the heater, thermometer and heat flow read clearly from the back of a class.
     <group scale={1.25} position={[0.2, 0, -0.15]}>
-      {/* 0: power supply */}
+      {/* power supply */}
+      {has('power') && (
       <PopUp index={0}>
         <Part position={SUPPLY}>
           <boxGeometry args={[0.95, 0.6, 0.65]} />
@@ -130,8 +135,10 @@ export function HeatingScene({ getState, settings, running, lite, mistakes }: Sc
         ))}
         <Label position={[SUPPLY[0] - 0.45, SUPPLY[1] + 0.3, SUPPLY[2]]} text={t('label.power')} />
       </PopUp>
+      )}
 
-      {/* 1: beaker of water (and the lagging jacket when insulated) */}
+      {/* beaker of water (and the lagging jacket when placed and insulated) */}
+      {has('beaker') && (
       <PopUp index={1}>
         <mesh position={[BEAKER[0], BEAKER_H / 2, Z]}>
           <cylinderGeometry args={[BEAKER_R, BEAKER_R, BEAKER_H, 28, 1, true]} />
@@ -162,7 +169,7 @@ export function HeatingScene({ getState, settings, running, lite, mistakes }: Sc
           transparent
           opacity={0.5}
         />
-        {insulated && (
+        {insulated && has('lagging') && (
           // See-through lagging jacket with wrap lines, so the heater and heat flow stay visible.
           <group>
             <mesh position={[BEAKER[0], (BEAKER_H - 0.15) / 2, Z]}>
@@ -184,10 +191,12 @@ export function HeatingScene({ getState, settings, running, lite, mistakes }: Sc
             ))}
           </group>
         )}
-        <Label position={[BEAKER[0] + BEAKER_R + 0.1, 0.35, Z]} text={t(insulated ? 'label.lagging' : 'label.beaker')} />
+        <Label position={[BEAKER[0] + BEAKER_R + 0.1, 0.35, Z]} text={t(insulated && has('lagging') ? 'label.lagging' : 'label.beaker')} />
       </PopUp>
+      )}
 
-      {/* 2: immersion heater with its coil, and the wires carrying current */}
+      {/* immersion heater with its coil, the wires carrying current, and heat flowing into the water */}
+      {has('heater') && (
       <PopUp index={2}>
         <Part position={[HEATER_X, 1.15, Z]} edgeThreshold={60}>
           <cylinderGeometry args={[0.045, 0.045, 1.6, 12]} />
@@ -202,15 +211,21 @@ export function HeatingScene({ getState, settings, running, lite, mistakes }: Sc
           <sphereGeometry args={[0.24, 16, 12]} />
           <meshBasicMaterial ref={glow} color={ACCENT_GLOW} transparent opacity={0} depthWrite={false} />
         </mesh>
-        <Flow start={[SUPPLY[0] - 0.2, SUPPLY[1] + 0.42, SUPPLY[2]]} mid={[-0.9, 2.3, Z]} end={[HEATER_X - 0.03, 1.95, Z]} on={running} lite={lite} speed={2} width={1.8} />
-        <Flow start={[SUPPLY[0] + 0.2, SUPPLY[1] + 0.42, SUPPLY[2]]} mid={[-0.5, 2.1, Z]} end={[HEATER_X + 0.03, 1.95, Z]} on={running} lite={lite} speed={-2} width={1.8} />
+        {has('power') && (
+          <>
+            <Flow start={[SUPPLY[0] - 0.2, SUPPLY[1] + 0.42, SUPPLY[2]]} mid={[-0.9, 2.3, Z]} end={[HEATER_X - 0.03, 1.95, Z]} on={running} lite={lite} speed={2} width={1.8} />
+            <Flow start={[SUPPLY[0] + 0.2, SUPPLY[1] + 0.42, SUPPLY[2]]} mid={[-0.5, 2.1, Z]} end={[HEATER_X + 0.03, 1.95, Z]} on={running} lite={lite} speed={-2} width={1.8} />
+          </>
+        )}
         {flows.map((f, i) => (
           <Flow key={i} {...f} on={running} lite={lite} />
         ))}
         <Label position={[HEATER_X - 0.1, 2.0, Z]} text={t('label.heater')} />
       </PopUp>
+      )}
 
-      {/* 3: thermometer with its column and live reading, and the stirrer */}
+      {/* thermometer with its column and live reading */}
+      {has('thermometer') && (
       <PopUp index={3}>
         <Part position={[thermoX, THERMO_BOTTOM + THERMO_LEN / 2, Z + 0.15]} edgeThreshold={60}>
           <cylinderGeometry args={[0.035, 0.035, THERMO_LEN, 10]} />
@@ -231,19 +246,26 @@ export function HeatingScene({ getState, settings, running, lite, mistakes }: Sc
           </div>
         </Html>
         <Label position={[thermoX + 0.1, 1.45, Z + 0.15]} text={t('label.thermometer')} />
-        {stirred ? (
-          <Part position={[BEAKER[0] + 0.05, 0.85, Z - 0.3]} rotation={[0.25, 0, -0.18]} edgeThreshold={60}>
-            <cylinderGeometry args={[0.025, 0.025, 1.6, 8]} />
-          </Part>
-        ) : (
-          // Cikgu Silap: the stirrer lies unused on the page.
+      </PopUp>
+      )}
+
+      {/* stirrer: in the beaker, or (Cikgu Silap) lying unused on the page */}
+      {(!stirred || has('stirrer')) && (
+      <PopUp index={4}>
+        {!stirred ? (
           <Part position={[BEAKER[0] + 1.1, 0.03, Z + 0.7]} rotation={[0, 0.4, Math.PI / 2]} edgeThreshold={60}>
             <cylinderGeometry args={[0.025, 0.025, 1.4, 8]} />
           </Part>
-        )}
+        ) : has('stirrer') ? (
+          <Part position={[BEAKER[0] + 0.05, 0.85, Z - 0.3]} rotation={[0.25, 0, -0.18]} edgeThreshold={60}>
+            <cylinderGeometry args={[0.025, 0.025, 1.6, 8]} />
+          </Part>
+        ) : null}
       </PopUp>
+      )}
 
       {mistakes && <PlantedMistakes mistakes={mistakes} />}
+      {assembly && heatingMeta.assembly && <AssemblySlots assembly={heatingMeta.assembly} state={assembly} />}
     </group>
   )
 }

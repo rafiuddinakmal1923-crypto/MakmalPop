@@ -33,4 +33,16 @@ export const heatingMeta: TemplateMeta = {
   mistakeReplay: { time_s: 300, insulated: 0, thermometerOnHeater: true, stirred: false },
   // A 600 s heating run would take a minute at 10x; 60x plays it in about 13 s.
   fastForward: 60,
+  // "Susun sendiri": slots match the scene's own frame (beaker at x = 0.35, heater x = 0.17, supply x = -1.1).
+  assembly: {
+    parts: [
+      { id: 'beaker', slot: [0.35, 0.5, -0.6] },
+      { id: 'power', slot: [-1.1, 0.45, -0.9] },
+      { id: 'heater', slot: [-0.13, 1.75, -1.0], requires: ['beaker'] },
+      { id: 'thermometer', slot: [0.87, 2.0, -0.85], requires: ['beaker'] },
+      { id: 'stirrer', slot: [0.4, 1.25, -1.5], requires: ['beaker'] },
+      { id: 'lagging', slot: [1.25, 0.6, -1.0], requires: ['beaker'] },
+    ],
+    distractors: ['bob', 'rule'],
+  },
 }

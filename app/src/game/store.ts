@@ -10,11 +10,17 @@ import { seededRng, type Reading, type Rng, type Settings } from '../experiments
 import type { Page } from '../storage/packSchema'
 import { saveProgress } from '../storage/db'
 import { addPoints, applyPrediction, POINTS, type Stake } from './scoring'
+import { checkDrop } from './assembly'
 import { checkUnlock, type UnlockResult } from './unlock'
 
 export const STEPS = ['mission', 'variables', 'predict', 'run', 'explain', 'formula'] as const
+/** The two ways to start: apparatus ready ("Uji terus") or built by the student ("Susun sendiri"). */
+export type Mode = 'direct' | 'setup'
+/** In set-up mode the student assembles the apparatus right after the mission. */
+export const SETUP_STEPS = ['mission', 'setup', 'variables', 'predict', 'run', 'explain', 'formula'] as const
 /** 'mistakes' is the Cikgu Silap bonus, reached from 'done'. */
-export type Step = (typeof STEPS)[number] | 'done' | 'mistakes'
+export type Step = (typeof SETUP_STEPS)[number] | 'done' | 'mistakes'
+export const stepsFor = (mode: Mode | null): readonly Step[] => (mode === 'setup' ? SETUP_STEPS : STEPS)
 
 /** Real seconds a run plays at normal speed before it fast-forwards. */
 export const LIVE_SECONDS = 3
@@ -26,6 +32,8 @@ export interface Feedback {
   points?: number
   /** i18n key for the message. */
   key: string
+  /** Words to put into the message, for example { part: 'clamp' } for "Letakkan {part} dahulu". */
+  vars?: Record<string, string>
 }
 
 export interface RunClock {
@@ -39,6 +47,11 @@ export type Slot = 'manipulated' | 'responding' | 'constant'
 interface GameState {
   page: Page | null
   step: Step
+  mode: Mode | null
+  /** Set-up mode: parts on the page, wrong drops so far, and the part picked by tap (tap-then-tap placing). */
+  placed: string[]
+  setupMistakes: number
+  selectedPart: string | null
   score: number
   /** Variables step: where the student put each chip. */
   placement: Record<string, Slot | undefined>
@@ -60,7 +73,11 @@ interface GameState {
   mistakeTries: Record<string, number>
 
   begin: (page: Page) => void
+  /** "Uji terus" (apparatus ready). Kept for callers that predate the two modes. */
   acceptMission: () => void
+  chooseMode: (mode: Mode) => void
+  selectPart: (id: string | null) => void
+  dropPart: (partId: string, slotId: string) => void
   place: (variableId: string, slot: Slot | undefined) => void
   checkVariables: () => boolean
   lockPrediction: (choice: number, stake: Stake) => void
@@ -117,6 +134,10 @@ const idleRun: RunClock = { t: 0, duration: 0, running: false }
 export const useGame = create<GameState>()((set, get) => ({
   page: null,
   step: 'mission',
+  mode: null,
+  placed: [],
+  setupMistakes: 0,
+  selectedPart: null,
   score: 0,
   placement: {},
   variablesTries: 0,
@@ -139,6 +160,10 @@ export const useGame = create<GameState>()((set, get) => ({
     set({
       page,
       step: 'mission',
+      mode: null,
+      placed: [],
+      setupMistakes: 0,
+      selectedPart: null,
       score: 0,
       placement: {},
       variablesTries: 0,
@@ -158,7 +183,49 @@ export const useGame = create<GameState>()((set, get) => ({
       mistakeTries: {},
     }),
 
-  acceptMission: () => set({ step: 'variables' }),
+  acceptMission: () => get().chooseMode('direct'),
+
+  chooseMode: (mode) => {
+    const { page } = get()
+    if (!page) return
+    const parts = getModel(page.template).meta.assembly?.parts.map((p) => p.id) ?? []
+    // Templates without an assembly fall back to the ready-made apparatus.
+    if (mode === 'setup' && parts.length) set({ mode, step: 'setup', placed: [], setupMistakes: 0, selectedPart: null })
+    else set({ mode: 'direct', step: 'variables', placed: parts })
+  },
+
+  selectPart: (id) => set((s) => ({ selectedPart: s.selectedPart === id ? null : id })),
+
+  dropPart: (partId, slotId) => {
+    const { page, placed, setupMistakes, score, step } = get()
+    if (!page || step !== 'setup') return
+    const assembly = getModel(page.template).meta.assembly
+    if (!assembly) return
+    const r = checkDrop(assembly, placed, partId, slotId)
+    if (!r.ok) {
+      if (r.reason === 'already') return
+      const key = r.reason === 'not-needed' ? 'setup.notNeeded' : r.reason === 'wrong-slot' ? 'setup.wrongSlot' : 'setup.needsFirst'
+      set({
+        setupMistakes: setupMistakes + 1,
+        selectedPart: null,
+        feedback: { kind: 'bad', key, vars: r.reason === 'needs' ? { part: r.needs } : undefined },
+      })
+      return
+    }
+    const next = [...placed, partId]
+    if (!r.complete) {
+      set({ placed: next, selectedPart: null, feedback: null })
+      return
+    }
+    const pts = setupMistakes === 0 ? POINTS.setupFirstTry : 0
+    set({
+      placed: next,
+      selectedPart: null,
+      step: 'variables',
+      score: addPoints(score, pts),
+      feedback: { kind: 'good', key: 'setup.done', points: pts || undefined },
+    })
+  },
 
   place: (variableId, slot) => set((s) => ({ placement: { ...s.placement, [variableId]: slot } })),
 

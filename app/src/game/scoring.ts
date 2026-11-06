@@ -1,6 +1,8 @@
 /** Scoring rules (SDS 6.1). Pure; shared by student mode and class mode. */
 export const POINTS = {
   variablesFirstTry: 1,
+  /** Apparatus set up with no wrong piece, place or order. */
+  setupFirstTry: 1,
   explainCorrect: 1,
   formulaDiscovered: 2,
   mistakeFound: 1,

@@ -7,7 +7,7 @@ test('full pendulum loop: variables, predict, run, explain, formula unlock', asy
   await openPendulum(page)
 
   // A wrong variable setup shows the fair-test hint.
-  await tap(page, 'mission-accept')
+  await tap(page, 'mission-direct')
   await tap(page, 'place-length-responding')
   await tap(page, 'place-period-manipulated')
   await tap(page, 'place-mass-constant')
@@ -56,6 +56,8 @@ test('progress is saved and the page shows a sticker on the contents page', asyn
   await tap(page, 'explain-continue')
   await tap(page, 'graph-T2-vs-l')
   await tap(page, 'formula-confirm')
+  // Progress is written to IndexedDB in the background; the next page unlocking shows the write landed.
+  await expect(page.getByTestId('nav-next')).toBeEnabled()
   await page.reload()
   await tap(page, 'cover-student')
   await expect(page.getByTestId('contents-t4-bab1-bandul')).toContainText('Bandul Ringkas')
