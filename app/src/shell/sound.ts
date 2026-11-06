@@ -126,7 +126,7 @@ function tone(e: Engine, dest: AudioNode, freq: number, t: number, dur: number, 
 
 let noiseBuf: AudioBuffer | null = null
 /** Filtered noise: paper, clicks, bubbles. The filter frequency can sweep from f0 to f1. */
-function noise(e: Engine, t: number, dur: number, gain: number, type: BiquadFilterType, f0: number, f1 = f0, q = 1) {
+function noise(e: Engine, t: number, dur: number, gain: number, type: BiquadFilterType, f0: number, f1 = f0, q = 1, dest: AudioNode = e.sfx) {
   if (!noiseBuf || noiseBuf.sampleRate !== e.ctx.sampleRate) {
     noiseBuf = e.ctx.createBuffer(1, e.ctx.sampleRate, e.ctx.sampleRate)
     const d = noiseBuf.getChannelData(0)
@@ -143,7 +143,7 @@ function noise(e: Engine, t: number, dur: number, gain: number, type: BiquadFilt
   g.gain.setValueAtTime(0.0001, t)
   g.gain.exponentialRampToValueAtTime(gain, t + Math.min(0.02, dur / 3))
   g.gain.exponentialRampToValueAtTime(0.0001, t + dur)
-  src.connect(f).connect(g).connect(e.sfx)
+  src.connect(f).connect(g).connect(dest)
   src.start(t, Math.random() * 0.5)
   src.stop(t + dur + 0.05)
 }
@@ -270,36 +270,46 @@ let musicTimer: number | null = null
 let nextBarTime = 0
 let bar = 0
 
+/** Small random timing and loudness drift so the loop feels played, not machine-gunned. */
+function humanise(): { dt: number; dv: number } {
+  return { dt: (Math.random() - 0.5) * 0.012, dv: 0.9 + Math.random() * 0.2 }
+}
+
 function scheduleEvent(e: Engine, ev: MusicEvent, barStart: number, lite: boolean) {
-  const t = barStart + ev.beat * SECONDS_PER_BEAT
+  const { dt, dv } = humanise()
+  const t = Math.max(e.ctx.currentTime, barStart + ev.beat * SECONDS_PER_BEAT + dt)
   const dur = ev.dur * SECONDS_PER_BEAT
-  const f = midiToHz(ev.midi)
-  if (ev.kind === 'bell') {
-    bell(e, e.music, f, t, dur * 1.4, 0.05 * ev.vel, [1, 2.76, 5.4], 0.9)
-  } else if (ev.kind === 'bass') {
-    tone(e, e.music, f, t, dur, 0.09 * ev.vel, 'sine', undefined, 0.2)
-  } else {
-    // Pad: slow swell through a low-pass filter; two detuned voices unless in lite mode.
-    const g = e.ctx.createGain()
-    const lp = e.ctx.createBiquadFilter()
-    lp.type = 'lowpass'
-    lp.frequency.value = 1100
-    g.gain.setValueAtTime(0.0001, t)
-    g.gain.linearRampToValueAtTime(0.022 * ev.vel, t + dur * 0.35)
-    g.gain.linearRampToValueAtTime(0.0001, t + dur * 1.05)
-    lp.connect(g).connect(e.music)
-    const s = e.ctx.createGain()
-    s.gain.value = 0.7
-    g.connect(s).connect(e.reverb)
-    for (const detune of lite ? [0] : [-7, 7]) {
-      const o = e.ctx.createOscillator()
-      o.type = 'triangle'
-      o.frequency.value = f
-      o.detune.value = detune
-      o.connect(lp)
-      o.start(t)
-      o.stop(t + dur * 1.1)
+  const v = ev.vel * dv
+  const m = e.music
+  switch (ev.kind) {
+    case 'lead': {
+      // Marimba-like pluck: fundamental plus the bar's 4th harmonic, quick decay, a touch of room.
+      const f = midiToHz(ev.midi)
+      bell(e, m, f, t, Math.max(0.35, dur * 1.1), 0.06 * v, [1, 3.93, 9.2], 0.35)
+      if (!lite) tone(e, m, f * 2, t, 0.08, 0.012 * v, 'triangle', undefined, 0) // mallet click
+      break
     }
+    case 'stab':
+      // Short plucked chord on the off-beat.
+      tone(e, m, midiToHz(ev.midi), t, 0.16, 0.017 * v, 'triangle', undefined, 0.25)
+      break
+    case 'bass': {
+      const f = midiToHz(ev.midi)
+      tone(e, m, f, t, Math.min(dur, 0.42), 0.085 * v, 'sine', undefined, 0)
+      if (!lite) tone(e, m, f * 2, t, 0.09, 0.03 * v, 'triangle', undefined, 0) // pluck attack
+      break
+    }
+    case 'kick':
+      tone(e, m, 130, t, 0.16, 0.065 * v, 'sine', 48, 0)
+      break
+    case 'snap':
+      // Finger snap: a bright noise crack with a little room.
+      noise(e, t, 0.07, 0.07 * v, 'bandpass', 2400, 1600, 1.8, m)
+      noise(e, t, 0.03, 0.04 * v, 'highpass', 6000, 6000, 0.7, m)
+      break
+    case 'shaker':
+      if (!lite) noise(e, t, 0.045, 0.018 * v, 'highpass', 7500, 9000, 0.8, m)
+      break
   }
 }
 
