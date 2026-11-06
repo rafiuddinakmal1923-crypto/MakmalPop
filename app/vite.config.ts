@@ -34,6 +34,22 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    rolldownOptions: {
+      output: {
+        // Split the big libraries into their own chunks: they cache separately and the app code stays small.
+        codeSplitting: {
+          groups: [
+            { name: 'three', test: /node_modules[\/](three|three-stdlib|@react-three|@react-spring|@monogrid|troika-|maath|meshline|camera-controls|stats-gl|suspend-react|its-fine)/ },
+            { name: 'react', test: /node_modules[\/](react|react-dom|scheduler|zustand|use-sync-external-store)[\/]/ },
+          ],
+        },
+      },
+    },
+    // The three.js chunk (three + R3F + drei + React DOM) is about 1.2 MB minified, 320 kB gzipped. That is expected
+    // for a 3D app and fits the 15 MB budget; the limit is set just above it so real growth still warns.
+    chunkSizeWarningLimit: 1300,
+  },
   // content/ and assets/ live outside app/, so the dev server must be allowed to read them.
   server: { fs: { allow: ['..'] } },
   test: {

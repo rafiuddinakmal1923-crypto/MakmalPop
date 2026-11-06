@@ -25,12 +25,15 @@ function useDeviceLite() {
   }, [setLiteAuto])
 }
 
-/** Start (or keep) the game for the experiment page that is open. */
+/**
+ * Start (or keep) the game for the experiment page that is open. Class mode uses the same store for the
+ * experiment settings and run clock (setControl, startRun, skipRun); it keeps its own teams and scores.
+ */
 function useGameForPage() {
   const screen = useNav((s) => s.screen)
   const spread = useNav((s) => s.spread)
   useEffect(() => {
-    if (screen !== 'book' || spread === 0) return
+    if (screen === 'cover' || spread === 0) return
     const page = allPages()[spread - 1]
     if (page && useGame.getState().page?.pageId !== page.pageId) useGame.getState().begin(page)
   }, [screen, spread])

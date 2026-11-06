@@ -3,10 +3,8 @@
  * panel, and the "lift the flap" card that reveals the formula once it is unlocked (build prompt section 4).
  */
 import clsx from 'clsx'
-import katex from 'katex'
-import 'katex/dist/katex.min.css'
 import { Lock } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { StepPanel } from '../game/StepPanel'
 import { STEPS, useGame } from '../game/store'
 import { useT } from '../i18n'
@@ -44,7 +42,17 @@ function FormulaFlap({ latex }: { latex: string }) {
   const { t } = useT()
   const unlocked = useGame((s) => s.formulaUnlocked)
   const [lifted, setLifted] = useState(false)
-  const html = useMemo(() => katex.renderToString(latex, { throwOnError: false, displayMode: true }), [latex])
+  // KaTeX is loaded on demand: it is only needed for the formula card, not for the first screen.
+  const [html, setHtml] = useState('')
+  useEffect(() => {
+    let alive = true
+    void Promise.all([import('katex'), import('katex/dist/katex.min.css')]).then(([k]) => {
+      if (alive) setHtml(k.default.renderToString(latex, { throwOnError: false, displayMode: true }))
+    })
+    return () => {
+      alive = false
+    }
+  }, [latex])
   const open = unlocked && lifted
   return (
     <div className="relative mt-auto h-[64px]" style={{ perspective: 600 }}>

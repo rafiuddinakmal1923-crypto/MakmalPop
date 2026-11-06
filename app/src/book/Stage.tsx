@@ -5,6 +5,7 @@
 import { Canvas, useFrame } from '@react-three/fiber'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { CanvasTexture, type Group } from 'three'
+import { ClassLeftPage } from '../classmode/ClassLeftPage'
 import { templates } from '../experiments/registry'
 import { useGame } from '../game/store'
 import { useNav } from '../shell/nav'
@@ -141,15 +142,22 @@ export function Stage({ portrait, short }: { portrait: boolean; short: boolean }
   const framing = useMemo<Framing>(() => {
     if (!isOpen) return { target: [PAGE_W / 2, PAGE_Y, 0], width: PAGE_W, depth: BOOK_D, fill: 0.55, vfill: 0.62 }
     if (portrait) return { target: [PAGE_W / 2, PAGE_Y + 0.6, -0.2], width: PAGE_W * 1.05, depth: PAGE_D, fill: 0.96, height: 2.5 }
+    // Class mode on a projector: closer to the right page, scoreboard still readable on the left.
+    if (screen === 'class' && page && !portrait)
+      return { target: [PAGE_W * 0.3, PAGE_Y + 0.5, -0.1], width: BOOK_W * 0.82, depth: BOOK_D, fill: 0.95, vfill: 0.8, height: 2.4 }
     if (short && page && step === 'run')
       return { target: [PAGE_W / 2 - 0.1, PAGE_Y + 0.7, -0.6], width: PAGE_W * 0.8, depth: PAGE_D * 0.7, fill: 0.3, vfill: 0.8, height: 2.6 }
     if (short && page) return { target: [-PAGE_W / 2 + 0.35, PAGE_Y, 0.55], width: PAGE_W * 1.3, depth: PAGE_D, fill: 0.62, vfill: 0.72 }
     if (short) return { target: [0, PAGE_Y, 0.35], width: BOOK_W, depth: BOOK_D, fill: 0.92, vfill: 0.86 }
     return { target: [0, PAGE_Y, page ? 0.2 : 0.55], width: BOOK_W, depth: BOOK_D, fill: 0.88, vfill: page ? 0.66 : 0.74, height: page ? 2.4 : 0 }
-  }, [isOpen, portrait, page, short, step])
+  }, [isOpen, portrait, page, short, step, screen])
 
   const left = showContent && !portrait ? (
-    page ? (
+    page && screen === 'class' ? (
+      <PageHtml testId="class-left">
+        <ClassLeftPage page={page} />
+      </PageHtml>
+    ) : page ? (
       <PageHtml testId="left-page">
         <LeftPage page={page} />
       </PageHtml>
@@ -180,6 +188,12 @@ export function Stage({ portrait, short }: { portrait: boolean; short: boolean }
       frameloop={portrait && portraitView === 'concept' ? 'demand' : 'always'}
       style={{ position: 'absolute', inset: 0 }}
       onCreated={(state) => {
+        // Hide the HTML splash once the 3D canvas is ready.
+        const splash = document.getElementById('splash')
+        if (splash) {
+          splash.style.opacity = '0'
+          window.setTimeout(() => splash.remove(), 450)
+        }
         // Dev-only handle for debugging in the browser console and Playwright.
         if (import.meta.env.DEV) (window as unknown as { __r3f: unknown }).__r3f = state
       }}

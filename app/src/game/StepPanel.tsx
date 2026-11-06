@@ -10,6 +10,7 @@ import { getModel } from '../experiments/models'
 import { useT } from '../i18n'
 import type { Page } from '../storage/packSchema'
 import type { Stake } from './scoring'
+import { optionOrder } from './shuffle'
 import { readingsReady, useGame, type Slot } from './store'
 
 const SLOTS: { slot: Slot; key: 'variables.manipulated' | 'variables.responding' | 'variables.constant'; short: string }[] = [
@@ -113,7 +114,7 @@ function Predict({ page }: { page: Page }) {
   return (
     <div className="flex flex-col gap-1.5">
       <p className="font-serif text-[16px] leading-snug">{tx(page.prediction.question)}</p>
-      {page.prediction.options.map((o, i) => (
+      {optionOrder(`${page.pageId}:prediction`, page.prediction.options.length).map((i) => (
         <Btn
           key={i}
           data-testid={`predict-${i}`}
@@ -121,7 +122,7 @@ function Predict({ page }: { page: Page }) {
           className={clsx('text-left', choice === i ? 'bg-ink text-paper' : 'bg-white/70')}
           onClick={() => setChoice(i)}
         >
-          {tx(o)}
+          {tx(page.prediction.options[i])}
         </Btn>
       ))}
       <p className="mt-1 flex items-center gap-1 text-[13px] text-ink-soft">
@@ -186,7 +187,8 @@ function Explain({ page }: { page: Page }) {
   return (
     <div className="flex flex-col gap-1.5">
       <p className="font-serif text-[16px] leading-snug">{tx(page.explain.question)}</p>
-      {page.explain.options.map((o, i) => {
+      {optionOrder(`${page.pageId}:explain`, page.explain.options.length).map((i) => {
+        const o = page.explain.options[i]
         const answered = explainChoice !== null
         const right = i === page.explain.answer
         return (
