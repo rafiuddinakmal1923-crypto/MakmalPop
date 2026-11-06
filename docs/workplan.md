@@ -112,7 +112,7 @@ Everything Lane B needs is now on `main`:
 | Phone portrait | One page at a time with a Konsep / Eksperimen switch | As in the build prompt 5.4 |
 | Lite mode | Keeps the crisp `<Html transform>` page; drops antialias, pixel ratio 2, idle drift and page curl | Simpler than a separate flat panel, and the page DOM is small |
 | Settings storage | localStorage; progress stays in Dexie (IndexedDB) | Settings must be ready on the first frame (language, lite mode) |
-| Sounds | Synthesised with Web Audio | No audio files to download or precache |
+| Sounds | Synthesised with Web Audio: soft tap on every button, coins, pop-up bloops, pendulum tick-tock, heating bubbles, bell arpeggio (correct), gentle "uh-oh" (wrong), unlock shimmer, class fanfare, and an original generative background loop (gamelan-like bells on D major pentatonic over a pad). Music on by default, starts on the first tap, pauses when hidden; toolbar speaker mutes all; Settings → Muzik latar | No audio files to download or precache, and the music is original |
 | Human error in readings | On for students (±0.1-0.3 s over 20 swings) | Realistic readings; the unlock rule still passes (about 2% residual) |
 | Answer order | Shown in a fixed shuffled order per page and question (`game/shuffle.ts`) | Pack authors write the right answer first; a fixed order keeps tests and filming repeatable |
 | Postprocessing (Bloom) | Not used yet; the glow is a transparent sphere | Saves size and GPU on cheap phones; can be added for desktop later |
@@ -125,7 +125,8 @@ The owner asked Claude Code to do Lane B's code tasks too. On `main` now:
 - **B5:** class battle mode: lobby with 2 default teams (up to 4), 3 rounds, stakes, scoreboard on the left page, winner.
 - **B6 (drafts):** `video/script.md` (4:45 shot list with BM narration and EN subtitles) and
   `submission/form-answers.md` (titles and the 600-character solution, BM and EN, lengths checked).
-- Tests: 58 unit tests and 10 end-to-end tests pass (pendulum, heating, Cikgu Silap, class mode, offline, screens).
+- Tests: 63 unit tests and 9 end-to-end tests pass (3 pendulum incl. Cikgu Silap, heating, class mode, offline,
+  3 screen sizes).
 
 **Still needs people (the friend's lane now):**
 1. **B1 textbook check** (`docs/textbook-check.md`): nothing is verified against the real books yet. Most urgent:

@@ -9,6 +9,7 @@ import type { Group, Mesh } from 'three'
 import { ACCENT, ACCENT_GLOW, INK, Part } from '../../book/lineart'
 import { htmlLayer } from '../../book/PageHtml'
 import { PopUp } from '../../book/PopUp'
+import { playTick } from '../../shell/sound'
 import { Hotspot } from '../Hotspot'
 import { useT } from '../../i18n'
 import type { SceneProps } from '../types'
@@ -82,6 +83,7 @@ export function PendulumScene({ getState, settings, running, lite, mistakes }: S
   const bob = useRef<Mesh>(null)
   const glow = useRef<Mesh>(null)
   const dash = useRef<{ material: { dashOffset: number } } | null>(null)
+  const lastSign = useRef(0)
 
   const lengthM = (settings.length_cm as number) / 100
   const L = lengthM * UNIT_PER_M
@@ -105,6 +107,10 @@ export function PendulumScene({ getState, settings, running, lite, mistakes }: S
   useFrame((_, dt) => {
     const s = getState()
     if (swing.current) swing.current.rotation.z = s.theta
+    // Tick-tock each time the bob passes the middle (the sound rate-limits itself in fast-forward).
+    const sign = Math.sign(s.theta)
+    if (running && sign !== 0 && lastSign.current !== 0 && sign !== lastSign.current) playTick()
+    lastSign.current = sign
     if (glow.current) {
       const speed = Math.abs(s.omega) / Math.max(1e-6, amp * ((2 * Math.PI) / s.period))
       glow.current.visible = running

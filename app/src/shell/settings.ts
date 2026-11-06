@@ -11,14 +11,17 @@ export interface SettingsState {
   /** null = automatic (decided by device memory and frame time). */
   liteOverride: boolean | null
   liteAuto: boolean
+  /** Master switch for every sound. */
   sound: boolean
+  /** Background music (needs `sound` too). */
+  music: boolean
   unlockAll: boolean
   demoWatermark: boolean
   setLang: (lang: Lang) => void
   toggleLang: () => void
   setLiteOverride: (v: boolean | null) => void
   setLiteAuto: (v: boolean) => void
-  set: (patch: Partial<Pick<SettingsState, 'sound' | 'unlockAll' | 'demoWatermark'>>) => void
+  set: (patch: Partial<Pick<SettingsState, 'sound' | 'music' | 'unlockAll' | 'demoWatermark'>>) => void
 }
 
 export const useSettings = create<SettingsState>()(
@@ -28,6 +31,7 @@ export const useSettings = create<SettingsState>()(
       liteOverride: null,
       liteAuto: false,
       sound: true,
+      music: true,
       unlockAll: false,
       demoWatermark: true,
       setLang: (lang) => set({ lang }),
@@ -42,6 +46,7 @@ export const useSettings = create<SettingsState>()(
         lang: s.lang,
         liteOverride: s.liteOverride,
         sound: s.sound,
+        music: s.music,
         unlockAll: s.unlockAll,
         demoWatermark: s.demoWatermark,
       }),

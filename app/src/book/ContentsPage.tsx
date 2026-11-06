@@ -41,7 +41,7 @@ export function ContentsPage({ form }: { form: 4 | 5 }) {
                     data-testid={`contents-${p.pageId}`}
                     disabled={!open}
                     onClick={() => {
-                      playFlip()
+                      playFlip(mode === 'class')
                       if (mode === 'class') startClass(i + 1)
                       else goTo(i + 1)
                     }}

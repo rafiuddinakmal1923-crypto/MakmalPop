@@ -13,7 +13,7 @@ import { optionOrder } from '../game/shuffle'
 import { useGame } from '../game/store'
 import { useT } from '../i18n'
 import { useNav } from '../shell/nav'
-import { playDing, playThud } from '../shell/sound'
+import { playDing, playFanfare, playThud } from '../shell/sound'
 import { allPages } from '../storage/packs'
 import { MAX_TEAMS, MIN_TEAMS, ROUNDS, useClass, winners, type Team } from './store'
 
@@ -140,6 +140,8 @@ function Round() {
                   <button
                     key={st}
                     data-testid={`class-stake-${team.id}-${st}`}
+                    data-sound="coin"
+                    data-stake={st}
                     aria-pressed={picks[team.id]?.stake === st}
                     aria-label={`${t('class.stake')} ${st}`}
                     onClick={() => setStake(team.id, st)}
@@ -193,7 +195,7 @@ function Winner() {
   const { teams, playAgain } = useClass()
   const openBook = useNav((s) => s.openBook)
   const top = winners(teams)
-  useEffect(() => playDing(), [])
+  useEffect(() => playFanfare(), [])
   return (
     <div data-testid="class-winner" className="flex flex-col items-center gap-[clamp(10px,1.2vw,24px)] text-center">
       <Trophy className="h-[clamp(48px,5vw,96px)] w-[clamp(48px,5vw,96px)]" />

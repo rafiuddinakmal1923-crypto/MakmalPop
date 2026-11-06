@@ -133,6 +133,8 @@ function Predict({ page }: { page: Page }) {
           <button
             key={s}
             data-testid={`stake-${s}`}
+            data-sound="coin"
+            data-stake={s}
             disabled={choice === null}
             onClick={() => choice !== null && lock(choice, s)}
             className="tap flex flex-1 items-center justify-center gap-0.5 rounded-full border-[1.5px] border-ink bg-white/70 disabled:opacity-40"

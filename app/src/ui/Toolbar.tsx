@@ -3,7 +3,7 @@
  * contents, lite mode, reset camera and settings. Shows the offline chip when there is no connection.
  */
 import clsx from 'clsx'
-import { ChevronLeft, ChevronRight, Feather, Languages, List, LocateFixed, Settings2, WifiOff } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Feather, Languages, List, LocateFixed, Settings2, Volume2, VolumeX, WifiOff } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { isUnlocked } from '../book/locks'
 import { useT } from '../i18n'
@@ -50,6 +50,8 @@ export function Toolbar({ onSettings }: { onSettings: () => void }) {
   const lite = useLite()
   const setLiteOverride = useSettings((s) => s.setLiteOverride)
   const unlockAll = useSettings((s) => s.unlockAll)
+  const sound = useSettings((s) => s.sound)
+  const setSettings = useSettings((s) => s.set)
   const progress = useProgress()
   const online = useOnline()
   const pages = allPages()
@@ -59,7 +61,7 @@ export function Toolbar({ onSettings }: { onSettings: () => void }) {
   const canPrev = screen === 'book' && spread > 0 && !turn
   const canNext = screen === 'book' && spread < total && !turn && isUnlocked(spread, pages, progress, { mode, unlockAll })
   const go = (to: number) => {
-    playFlip()
+    playFlip(mode === 'class')
     goTo(to)
   }
 
@@ -93,6 +95,11 @@ export function Toolbar({ onSettings }: { onSettings: () => void }) {
           {lang === 'ms' ? 'BM' : 'EN'}
         </span>
       </IconBtn>
+      <span className="hidden sm:contents">
+        <IconBtn testId="nav-sound" label={t('toolbar.sound')} active={!sound} onClick={() => setSettings({ sound: !sound })}>
+          {sound ? <Volume2 size={19} /> : <VolumeX size={19} />}
+        </IconBtn>
+      </span>
       <IconBtn testId="nav-lite" label={t('toolbar.lite')} active={lite} onClick={() => setLiteOverride(!lite)}>
         <Feather size={19} />
       </IconBtn>

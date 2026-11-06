@@ -12,6 +12,7 @@ import { Color, type Mesh, type MeshBasicMaterial, type MeshLambertMaterial } fr
 import { ACCENT, ACCENT_GLOW, INK, Part, PAPER } from '../../book/lineart'
 import { htmlLayer } from '../../book/PageHtml'
 import { PopUp } from '../../book/PopUp'
+import { playBubble } from '../../shell/sound'
 import { useT } from '../../i18n'
 import { Hotspot, type Mistakes } from '../Hotspot'
 import type { SceneProps } from '../types'
@@ -92,6 +93,7 @@ export function HeatingScene({ getState, settings, running, lite, mistakes }: Sc
   useFrame(() => {
     const s = getState()
     const on = running && s.heaterOn
+    if (on) playBubble(s.level)
     if (coil.current) coil.current.color.copy(tmp.copy(paper).lerp(hot, on ? 1 : Math.min(1, s.level * 1.5)))
     if (glow.current) glow.current.opacity = on ? 0.35 : 0
     if (column.current) {

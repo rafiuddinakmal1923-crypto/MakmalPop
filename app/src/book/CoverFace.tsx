@@ -8,7 +8,7 @@ export function CoverFace() {
   const { t } = useT()
   const openBook = useNav((s) => s.openBook)
   const open = (mode: 'student' | 'class') => {
-    playFlip()
+    playFlip(mode === 'class')
     openBook(mode)
   }
   return (

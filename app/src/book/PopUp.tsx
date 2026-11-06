@@ -5,6 +5,7 @@
 import { createContext, useContext, useRef, type ReactNode } from 'react'
 import { useFrame } from '@react-three/fiber'
 import type { Group } from 'three'
+import { playPop } from '../shell/sound'
 import { POP_STAGGER_MS } from './dims'
 
 /** Whether the parts on this page should be standing (true) or folded flat (false). */
@@ -17,6 +18,7 @@ export function PopUp({ index = 0, children }: { index?: number; children: React
   const ref = useRef<Group>(null)
   const ctx = useContext(PopUpContext)
   const st = useRef({ x: 0, v: 0 })
+  const rising = useRef(false)
   const reduced = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
   useFrame((_, dtRaw) => {
@@ -25,6 +27,9 @@ export function PopUp({ index = 0, children }: { index?: number; children: React
     const dt = Math.min(dtRaw, 1 / 30)
     const delayOver = performance.now() - ctx.since > index * POP_STAGGER_MS
     const target = ctx.shown && delayOver ? 1 : 0
+    // One soft "bloop" as each part starts to rise.
+    if (target === 1 && !rising.current) playPop(index)
+    rising.current = target === 1
     const s = st.current
     if (reduced) {
       s.x = target

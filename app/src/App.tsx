@@ -9,6 +9,7 @@ import { useGame } from './game/store'
 import { useT } from './i18n'
 import { useNav } from './shell/nav'
 import { useSettings } from './shell/settings'
+import { playCoin, playTap, unlockAudio } from './shell/sound'
 import { useViewport } from './shell/useViewport'
 import { allPages } from './storage/packs'
 import { ControlPanel } from './ui/ControlPanel'
@@ -24,6 +25,26 @@ function useDeviceLite() {
     const mem = (navigator as Navigator & { deviceMemory?: number }).deviceMemory
     if (typeof mem === 'number' && mem <= 4) setLiteAuto(true)
   }, [setLiteAuto])
+}
+
+/**
+ * Sound for every tap: the first gesture unlocks audio (browsers block it before that) and starts the music.
+ * Buttons choose their sound with data-sound: "coin" (with data-stake), "none", or the default soft tap.
+ */
+function useTapSounds() {
+  useEffect(() => {
+    const onDown = (ev: PointerEvent) => {
+      unlockAudio()
+      const el = (ev.target as HTMLElement | null)?.closest<HTMLElement>('button, input[type=range], [role=button]')
+      if (!el || (el as HTMLButtonElement).disabled) return
+      const kind = el.dataset.sound
+      if (kind === 'none') return
+      if (kind === 'coin') playCoin(Number(el.dataset.stake) || 1)
+      else playTap()
+    }
+    document.addEventListener('pointerdown', onDown, { capture: true })
+    return () => document.removeEventListener('pointerdown', onDown, { capture: true })
+  }, [])
 }
 
 /**
@@ -70,6 +91,7 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false)
   useDeviceLite()
   useGameForPage()
+  useTapSounds()
   useEffect(() => {
     if (step === 'mistakes') useNav.getState().setPortraitView('experiment')
   }, [step])

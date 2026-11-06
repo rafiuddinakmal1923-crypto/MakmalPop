@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useGame } from '../game/store'
 import { useT, type Key } from '../i18n'
 import { useLite, useSettings } from '../shell/settings'
-import { playDing, playThud } from '../shell/sound'
+import { playDing, playThud, playUnlock } from '../shell/sound'
 
 export function DemoWatermark() {
   const on = useSettings((s) => s.demoWatermark)
@@ -40,7 +40,8 @@ export function SettingsSheet({ onClose }: { onClose: () => void }) {
             <X />
           </button>
         </div>
-        <Toggle label={t('settings.sound')} value={s.sound} onChange={(v) => s.set({ sound: v })} />
+        <Toggle testId="setting-sound" label={t('settings.sound')} value={s.sound} onChange={(v) => s.set({ sound: v })} />
+        <Toggle testId="setting-music" label={t('settings.music')} value={s.music && s.sound} onChange={(v) => s.set({ music: v, ...(v ? { sound: true } : {}) })} />
         <Toggle label={t('settings.lite')} value={lite} onChange={(v) => s.setLiteOverride(v)} />
         <Toggle testId="setting-unlock-all" label={t('settings.unlockAll')} value={s.unlockAll} onChange={(v) => s.set({ unlockAll: v })} />
         <Toggle label={t('settings.demo')} value={s.demoWatermark} onChange={(v) => s.set({ demoWatermark: v })} />
@@ -100,7 +101,8 @@ export function FeedbackToast() {
   const dismiss = useGame((s) => s.dismissFeedback)
   useEffect(() => {
     if (!feedback) return
-    if (feedback.kind === 'good') playDing()
+    if (feedback.key === 'done.title') playUnlock()
+    else if (feedback.kind === 'good') playDing()
     else playThud()
     // The unfair-test hint stays on the page; the toast itself fades.
     const id = window.setTimeout(() => {

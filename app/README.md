@@ -22,6 +22,8 @@ Vite 8 + React 19 + TypeScript 7 + React Three Fiber 9 + drei 10. Commands are i
   `<StrictMode>` is off for the same reason.
 - 3D page elements move with the idle drift, so Playwright clicks use `force: true` (see `e2e/helpers.ts`).
 - In dev, `window.__r3f` holds the R3F state for debugging.
-- Sounds are synthesised with Web Audio (`shell/sound.ts`); there are no audio files.
+- Sounds and the background music are synthesised with Web Audio (`shell/sound.ts`, pattern in
+  `shell/musicPattern.ts`); there are no audio files. `node scripts/sound-check.mjs` (dev server running)
+  measures the levels headless: silence before the first tap, music, effects, and mute.
 - `scripts/make-icons.mjs` renders the PNG app icons from `public/icon.svg`;
   `scripts/shot.mjs` takes quick headless screenshots against the dev server.
