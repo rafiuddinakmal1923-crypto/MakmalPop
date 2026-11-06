@@ -275,7 +275,7 @@
         "manipulated": "time",
         "responding": "temperatureRise",
         "constant": [
-          "mass",
+          "waterMass",
           "power",
           "material"
         ]

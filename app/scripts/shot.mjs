@@ -14,6 +14,8 @@ for (const s of steps) {
   const arg = rest.join(':')
   if (kind === 'click') await page.getByTestId(arg).click({ timeout: 5000, force: true }).catch((e) => console.log('click failed', arg, e.message.split('\n')[0]))
   else if (kind === 'fill') { const [id, v] = arg.split('='); await page.getByTestId(id).fill(v, { force: true }) }
+  else if (kind === 'reload') { await page.reload(); await page.waitForTimeout(2500) }
+  else if (kind === 'unlockall') { await page.evaluate(() => localStorage.setItem('makmalpop-settings', JSON.stringify({ state: { lang: 'ms', liteOverride: null, sound: false, unlockAll: true, demoWatermark: true }, version: 0 }))); await page.reload(); await page.waitForTimeout(2500) }
   else if (kind === 'wait') await page.waitForTimeout(Number(arg))
   else if (kind === 'eval') console.log(JSON.stringify(await page.evaluate(arg)))
   else if (kind === 'shot') await page.screenshot({ path: `${outDir}/${arg}.png` })

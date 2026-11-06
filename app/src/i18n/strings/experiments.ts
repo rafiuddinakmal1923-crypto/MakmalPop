@@ -20,6 +20,7 @@ export const experiments = {
     // heating
     'var.time': 'Masa pemanasan',
     'var.temperatureRise': 'Kenaikan suhu',
+    'var.waterMass': 'Jisim air',
     'var.power': 'Kuasa pemanas',
     'var.material': 'Jenis bahan',
     'q.time_s': 't',
@@ -49,6 +50,7 @@ export const experiments = {
     'label.protractor': 'protractor',
     'var.time': 'Heating time',
     'var.temperatureRise': 'Temperature rise',
+    'var.waterMass': 'Mass of water',
     'var.power': 'Heater power',
     'var.material': 'Material',
     'q.time_s': 't',

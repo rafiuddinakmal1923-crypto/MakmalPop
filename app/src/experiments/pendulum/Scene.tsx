@@ -9,6 +9,7 @@ import type { Group, Mesh } from 'three'
 import { ACCENT, ACCENT_GLOW, INK, Part } from '../../book/lineart'
 import { htmlLayer } from '../../book/PageHtml'
 import { PopUp } from '../../book/PopUp'
+import { Hotspot } from '../Hotspot'
 import { useT } from '../../i18n'
 import type { SceneProps } from '../types'
 import { largeAnglePeriod, type PendulumState } from './model'
@@ -36,36 +37,6 @@ function Label({ position, text }: { position: [number, number, number]; text: s
       >
         {text}
       </div>
-    </Html>
-  )
-}
-
-/** A tap target for one planted mistake (Cikgu Silap). Shows ? until found, then ✓. */
-function Hotspot({ position, id, mistakes }: { position: [number, number, number]; id: string; mistakes: NonNullable<SceneProps<PendulumState>['mistakes']> }) {
-  const found = mistakes.found.includes(id)
-  const selected = mistakes.selected === id
-  return (
-    // pointerEvents auto: the Html layer itself is pointer-events none, and that is inherited.
-    <Html position={position} center portal={htmlLayer as React.RefObject<HTMLElement>} style={{ pointerEvents: 'auto' }} zIndexRange={[30, 25]}>
-      <button
-        data-testid={`hotspot-${id}`}
-        aria-label={id}
-        disabled={found}
-        onClick={() => mistakes.onPick(id)}
-        style={{
-          width: 48,
-          height: 48,
-          borderRadius: 999,
-          border: `2.5px solid ${INK}`,
-          background: found ? '#2E8B57' : selected ? INK : '#FBF8F1',
-          color: found || selected ? '#FBF8F1' : INK,
-          font: '700 22px Fraunces, serif',
-          boxShadow: `2px 2px 0 ${INK}`,
-          cursor: 'pointer',
-        }}
-      >
-        {found ? '✓' : '?'}
-      </button>
     </Html>
   )
 }

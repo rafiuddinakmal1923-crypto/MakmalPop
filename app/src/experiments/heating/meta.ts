@@ -6,10 +6,10 @@ import type { TemplateMeta } from '../types'
  */
 export const heatingMeta: TemplateMeta = {
   id: 'heating',
-  variableIds: ['time', 'temperatureRise', 'mass', 'power', 'material'],
+  variableIds: ['time', 'temperatureRise', 'waterMass', 'power', 'material'],
   controls: [
     { key: 'time_s', kind: 'slider', variableId: 'time', unit: 's', safeMin: 30, safeMax: 900, step: 60, default: 300 },
-    { key: 'mass_g', kind: 'slider', variableId: 'mass', unit: 'g', safeMin: 100, safeMax: 1000, step: 50, default: 500 },
+    { key: 'mass_g', kind: 'slider', variableId: 'waterMass', unit: 'g', safeMin: 100, safeMax: 1000, step: 50, default: 500 },
     { key: 'power_W', kind: 'slider', variableId: 'power', unit: 'W', safeMin: 20, safeMax: 200, step: 10, default: 100 },
     // 0 = water, 1 = aluminium (a number so content packs can set it like any other control).
     { key: 'material', kind: 'slider', variableId: 'material', unit: '', safeMin: 0, safeMax: 1, step: 1, default: 0 },
