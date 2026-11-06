@@ -64,6 +64,8 @@ export interface TemplateMeta {
   graphs: GraphOption[]
   /** Planted mistakes the template can replay for Cikgu Silap. */
   mistakeIds: string[]
+  /** Optional: settings for the Cikgu Silap replay (all planted mistakes at once). */
+  mistakeReplay?: Settings
 }
 
 export interface TemplateModel<State> {
@@ -87,6 +89,11 @@ export interface SceneProps<State> {
   running: boolean
   /** Lite mode: skip costly effects. */
   lite: boolean
+  /**
+   * Optional: present only during Cikgu Silap. The scene shows its planted mistakes and a tap target for each;
+   * tapping one calls onPick(id). Templates without mistakes can ignore it.
+   */
+  mistakes?: { found: string[]; selected: string | null; onPick: (id: string) => void }
 }
 // Wrap each apparatus part in <PopUp index={i}> (book/PopUp.tsx) so it rises out of the page in sequence.
 

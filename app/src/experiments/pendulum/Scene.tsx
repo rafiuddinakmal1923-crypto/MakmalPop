@@ -11,7 +11,7 @@ import { htmlLayer } from '../../book/PageHtml'
 import { PopUp } from '../../book/PopUp'
 import { useT } from '../../i18n'
 import type { SceneProps } from '../types'
-import type { PendulumState } from './model'
+import { largeAnglePeriod, type PendulumState } from './model'
 
 /** World units per metre of string. */
 const UNIT_PER_M = 2.0
@@ -40,7 +40,72 @@ function Label({ position, text }: { position: [number, number, number]; text: s
   )
 }
 
-export function PendulumScene({ getState, settings, running, lite }: SceneProps<PendulumState>) {
+/** A tap target for one planted mistake (Cikgu Silap). Shows ? until found, then ✓. */
+function Hotspot({ position, id, mistakes }: { position: [number, number, number]; id: string; mistakes: NonNullable<SceneProps<PendulumState>['mistakes']> }) {
+  const found = mistakes.found.includes(id)
+  const selected = mistakes.selected === id
+  return (
+    // pointerEvents auto: the Html layer itself is pointer-events none, and that is inherited.
+    <Html position={position} center portal={htmlLayer as React.RefObject<HTMLElement>} style={{ pointerEvents: 'auto' }} zIndexRange={[30, 25]}>
+      <button
+        data-testid={`hotspot-${id}`}
+        aria-label={id}
+        disabled={found}
+        onClick={() => mistakes.onPick(id)}
+        style={{
+          width: 48,
+          height: 48,
+          borderRadius: 999,
+          border: `2.5px solid ${INK}`,
+          background: found ? '#2E8B57' : selected ? INK : '#FBF8F1',
+          color: found || selected ? '#FBF8F1' : INK,
+          font: '700 22px Fraunces, serif',
+          boxShadow: `2px 2px 0 ${INK}`,
+          cursor: 'pointer',
+        }}
+      >
+        {found ? '✓' : '?'}
+      </button>
+    </Html>
+  )
+}
+
+/** What the careless run shows: an eye reading the ruler at a slant, a stopwatch that timed one swing, a 30° swing. */
+function PlantedMistakes({ mistakes, lengthM, ampDeg }: { mistakes: NonNullable<SceneProps<PendulumState>['mistakes']>; lengthM: number; ampDeg: number }) {
+  const { t } = useT()
+  const eye: [number, number, number] = [RULE_X + 1.0, PIVOT[1] - 0.35, PIVOT[2] + 0.9]
+  const readAt: [number, number, number] = [RULE_X, PIVOT[1] - lengthM * UNIT_PER_M, PIVOT[2]]
+  const oneSwing = largeAnglePeriod(lengthM, ampDeg)
+  return (
+    <group>
+      {/* Parallax: the line of sight hits the ruler at an angle, not square on. */}
+      <Line points={[eye, readAt]} color={INK} lineWidth={1.2} dashed dashSize={0.06} gapSize={0.05} />
+      <Html position={eye} center portal={htmlLayer as React.RefObject<HTMLElement>} style={{ pointerEvents: 'none' }} zIndexRange={[6, 0]}>
+        <svg width="34" height="22" viewBox="0 0 34 22" aria-hidden>
+          <path d="M2 11 Q17 -1 32 11 Q17 23 2 11Z" fill="#FBF8F1" stroke={INK} strokeWidth="2" />
+          <circle cx="17" cy="11" r="4.5" fill={INK} />
+        </svg>
+      </Html>
+      <Hotspot position={[eye[0] + 0.45, eye[1] + 0.35, eye[2]]} id="parallax" mistakes={mistakes} />
+
+      {/* Timing one oscillation: the stopwatch card reads a single swing. */}
+      <Html position={[ROD_X + 0.5, 0.35, PIVOT[2] + 1.1]} center portal={htmlLayer as React.RefObject<HTMLElement>} style={{ pointerEvents: 'none' }} zIndexRange={[6, 0]}>
+        <div style={{ background: '#FBF8F1', border: `2px solid ${INK}`, borderRadius: 8, padding: '2px 8px', font: '500 15px JetBrains Mono, monospace', whiteSpace: 'nowrap', color: INK }}>
+          ⏱ {oneSwing.toFixed(2)} s · 1 {t('run.oscillations')}
+        </div>
+      </Html>
+      <Hotspot position={[ROD_X + 0.5, 0.95, PIVOT[2] + 1.1]} id="timing-one-oscillation" mistakes={mistakes} />
+
+      {/* Large amplitude: the swing angle is marked on the protractor. */}
+      <Html position={[PIVOT[0] - 0.35, PIVOT[1] - 0.8, PIVOT[2]]} center portal={htmlLayer as React.RefObject<HTMLElement>} style={{ pointerEvents: 'none' }} zIndexRange={[6, 0]}>
+        <div style={{ font: '600 16px JetBrains Mono, monospace', color: INK }}>{Math.round(ampDeg)}°</div>
+      </Html>
+      <Hotspot position={[PIVOT[0] - 0.95, PIVOT[1] - 0.15, PIVOT[2]]} id="large-amplitude" mistakes={mistakes} />
+    </group>
+  )
+}
+
+export function PendulumScene({ getState, settings, running, lite, mistakes }: SceneProps<PendulumState>) {
   const { t } = useT()
   const swing = useRef<Group>(null)
   const bob = useRef<Mesh>(null)
@@ -51,7 +116,9 @@ export function PendulumScene({ getState, settings, running, lite }: SceneProps<
   const L = lengthM * UNIT_PER_M
   const massG = (settings.mass_g as number) ?? 50
   const bobR = 0.1 + 0.05 * Math.cbrt(massG / 200)
-  const amp = (Math.min((settings.amplitude_deg as number) ?? 8, 10) * Math.PI) / 180
+  // The 10° cap is lifted only in the Cikgu Silap large-angle replay.
+  const ampDeg = settings.largeAngle === true ? ((settings.amplitude_deg as number) ?? 8) : Math.min((settings.amplitude_deg as number) ?? 8, 10)
+  const amp = (ampDeg * Math.PI) / 180
 
   // Orange arc the bob sweeps through (the motion trail).
   const arc = useMemo(() => {
@@ -155,6 +222,7 @@ export function PendulumScene({ getState, settings, running, lite }: SceneProps<
           </group>
         </group>
       </PopUp>
+      {mistakes && <PlantedMistakes mistakes={mistakes} lengthM={lengthM} ampDeg={ampDeg} />}
     </group>
   )
 }

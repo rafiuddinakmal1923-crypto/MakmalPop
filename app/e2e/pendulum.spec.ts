@@ -61,3 +61,32 @@ test('progress is saved and the page shows a sticker on the contents page', asyn
   await expect(page.getByTestId('contents-t4-bab1-bandul')).toContainText('Bandul Ringkas')
   await expect(page.getByTestId('contents-t4-bab1-bandul').getByTitle('Selesai')).toBeVisible()
 })
+
+test('Cikgu Silap: find all 3 planted mistakes for bonus points', async ({ page }) => {
+  await openPendulum(page)
+  await playToRun(page)
+  for (const l of [20, 40, 60, 80, 100]) await takeReading(page, l)
+  await tap(page, 'run-continue')
+  await tap(page, 'explain-0')
+  await tap(page, 'explain-continue')
+  await tap(page, 'graph-T2-vs-l')
+  await tap(page, 'formula-confirm')
+  await expect(page.getByTestId('mistakes-start')).toBeVisible()
+  await page.waitForTimeout(500)
+  await tap(page, 'mistakes-start')
+  await expect(page.getByTestId('mistake-picker')).toBeVisible()
+
+  // A wrong reason first: no point for that mistake, but it can still be found.
+  await tap(page, 'hotspot-parallax')
+  await tap(page, 'reason-1')
+  await tap(page, 'reason-0')
+  for (const id of ['timing-one-oscillation', 'large-amplitude']) {
+    await tap(page, `hotspot-${id}`)
+    await tap(page, 'reason-0')
+  }
+  await expect(page.getByTestId('mistake-picker')).toContainText('Semua kesilapan ditemui')
+  await tap(page, 'mistakes-end')
+  // 6 points from the main loop (+1 variables, +2 stake, +1 explain, +2 formula) and +2 from Cikgu Silap.
+  await expect(page.getByTestId('left-page')).toContainText('8 mata')
+  await expect(page.getByTestId('left-page')).toContainText('3/3')
+})

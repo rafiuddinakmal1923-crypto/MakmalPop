@@ -13,7 +13,7 @@ import type { Page } from '../storage/packSchema'
 function StepStrip() {
   const { t, tk } = useT()
   const step = useGame((s) => s.step)
-  const current = step === 'done' ? STEPS.length : STEPS.indexOf(step)
+  const current = step === 'done' || step === 'mistakes' ? STEPS.length : STEPS.indexOf(step)
   return (
     <div className="flex items-center gap-2">
       <ol className="flex gap-1" aria-label={t('score.label')}>

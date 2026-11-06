@@ -259,6 +259,10 @@ function Formula({ page }: { page: Page }) {
 function Done() {
   const { t } = useT()
   const score = useGame((s) => s.score)
+  const page = useGame((s) => s.page)
+  const found = useGame((s) => s.mistakesFound.length)
+  const startMistakes = useGame((s) => s.startMistakes)
+  const hasMistakes = !!page?.mistakes.length
   return (
     <div className="flex flex-col items-center gap-2 py-2 text-center">
       <div className="flex h-16 w-16 items-center justify-center rounded-full border-[2.5px] border-ink bg-good text-[30px] text-paper shadow-[3px_3px_0_var(--ink)]">★</div>
@@ -266,7 +270,28 @@ function Done() {
       <div className="font-mono text-[15px]">
         {score} {t('result.points')}
       </div>
-      <p className="text-[12px] text-ink-soft">{t('done.bonus')}</p>
+      {hasMistakes && found === page!.mistakes.length ? (
+        <p className="font-mono text-[13px]">
+          ✓ {t('mistakes.done')} {found}/{page!.mistakes.length}
+        </p>
+      ) : hasMistakes ? (
+        <Btn data-testid="mistakes-start" className="mt-1 bg-white/70" onClick={startMistakes}>
+          {t('done.bonus')} →
+        </Btn>
+      ) : null}
+    </div>
+  )
+}
+
+function Mistakes({ page }: { page: Page }) {
+  const { t } = useT()
+  const found = useGame((s) => s.mistakesFound.length)
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-[14px] leading-snug">{t('mistakes.intro')}</p>
+      <p className="font-mono text-[15px]">
+        {found}/{page.mistakes.length} {t('mistakes.found')}
+      </p>
     </div>
   )
 }
@@ -288,5 +313,7 @@ export function StepPanel({ page }: { page: Page }) {
       return <Formula page={page} />
     case 'done':
       return <Done />
+    case 'mistakes':
+      return <Mistakes page={page} />
   }
 }

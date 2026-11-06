@@ -23,4 +23,6 @@ export const pendulumMeta: TemplateMeta = {
     { id: 'T2-vs-l', x: 'length_m', y: 'T2_s2', straight: true },
   ],
   mistakeIds: ['parallax', 'timing-one-oscillation', 'large-amplitude'],
+  // Cikgu Silap replay: a 60 cm string swung at 30° (past the 10° cap), timed for one swing, ruler read at a slant.
+  mistakeReplay: { length_cm: 60, amplitude_deg: 30, largeAngle: true },
 }

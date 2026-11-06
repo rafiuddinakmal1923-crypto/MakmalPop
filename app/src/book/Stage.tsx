@@ -98,12 +98,20 @@ function Experiment({ page, lite }: { page: Page; lite: boolean }) {
   const tpl = templates[page.template]
   const settings = useGame((s) => s.settings)
   const running = useGame((s) => s.run.running)
+  const step = useGame((s) => s.step)
+  const found = useGame((s) => s.mistakesFound)
+  const selected = useGame((s) => s.mistakeSelected)
+  const selectMistake = useGame((s) => s.selectMistake)
   const getState = useCallback(() => {
     const g = useGame.getState()
     return tpl.simulate(g.settings, g.run.t)
   }, [tpl])
+  const mistakes = useMemo(
+    () => (step === 'mistakes' ? { found, selected, onPick: selectMistake } : undefined),
+    [step, found, selected, selectMistake],
+  )
   if (!tpl || !settings[tpl.meta.manipulatedControl]) return null
-  return <tpl.Scene getState={getState} settings={settings} running={running} lite={lite} />
+  return <tpl.Scene getState={getState} settings={settings} running={running} lite={lite} mistakes={mistakes} />
 }
 
 /** True `ms` after `on` became true (content appears once the cover has opened). */
@@ -145,7 +153,7 @@ export function Stage({ portrait, short }: { portrait: boolean; short: boolean }
     // Class mode on a projector: closer to the right page, scoreboard still readable on the left.
     if (screen === 'class' && page && !portrait)
       return { target: [PAGE_W * 0.3, PAGE_Y + 0.5, -0.1], width: BOOK_W * 0.82, depth: BOOK_D, fill: 0.95, vfill: 0.8, height: 2.4 }
-    if (short && page && step === 'run')
+    if (short && page && (step === 'run' || step === 'mistakes'))
       return { target: [PAGE_W / 2 - 0.1, PAGE_Y + 0.7, -0.6], width: PAGE_W * 0.8, depth: PAGE_D * 0.7, fill: 0.3, vfill: 0.8, height: 2.6 }
     if (short && page) return { target: [-PAGE_W / 2 + 0.35, PAGE_Y, 0.55], width: PAGE_W * 1.3, depth: PAGE_D, fill: 0.62, vfill: 0.72 }
     if (short) return { target: [0, PAGE_Y, 0.35], width: BOOK_W, depth: BOOK_D, fill: 0.92, vfill: 0.86 }
@@ -191,6 +199,8 @@ export function Stage({ portrait, short }: { portrait: boolean; short: boolean }
         // Hide the HTML splash once the 3D canvas is ready.
         const splash = document.getElementById('splash')
         if (splash) {
+          // Stop catching taps at once: on a slow device the removal timer below can fire seconds late.
+          splash.style.pointerEvents = 'none'
           splash.style.opacity = '0'
           window.setTimeout(() => splash.remove(), 450)
         }

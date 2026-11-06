@@ -13,7 +13,8 @@ import { addPoints, applyPrediction, POINTS, type Stake } from './scoring'
 import { checkUnlock, type UnlockResult } from './unlock'
 
 export const STEPS = ['mission', 'variables', 'predict', 'run', 'explain', 'formula'] as const
-export type Step = (typeof STEPS)[number] | 'done'
+/** 'mistakes' is the Cikgu Silap bonus, reached from 'done'. */
+export type Step = (typeof STEPS)[number] | 'done' | 'mistakes'
 
 /** Real seconds a run plays at normal speed before it fast-forwards. */
 export const LIVE_SECONDS = 3
@@ -53,6 +54,10 @@ interface GameState {
   formulaUnlocked: boolean
   feedback: Feedback | null
   rng: Rng
+  /** Cikgu Silap: mistakes found (ids), the one being answered, and wrong picks per mistake. */
+  mistakesFound: string[]
+  mistakeSelected: string | null
+  mistakeTries: Record<string, number>
 
   begin: (page: Page) => void
   acceptMission: () => void
@@ -70,6 +75,10 @@ interface GameState {
   chooseGraph: (graphId: string) => void
   confirmStraight: () => void
   dismissFeedback: () => void
+  startMistakes: () => void
+  selectMistake: (id: string) => void
+  answerMistake: (reason: number) => void
+  endMistakes: () => void
 }
 
 function defaultSettings(page: Page): Settings {
@@ -120,6 +129,9 @@ export const useGame = create<GameState>()((set, get) => ({
   formulaUnlocked: false,
   feedback: null,
   rng: seededRng(1),
+  mistakesFound: [],
+  mistakeSelected: null,
+  mistakeTries: {},
 
   begin: (page) =>
     set({
@@ -139,6 +151,9 @@ export const useGame = create<GameState>()((set, get) => ({
       formulaUnlocked: false,
       feedback: null,
       rng: seededRng(Date.now() & 0xffff),
+      mistakesFound: [],
+      mistakeSelected: null,
+      mistakeTries: {},
     }),
 
   acceptMission: () => set({ step: 'variables' }),
@@ -262,4 +277,55 @@ export const useGame = create<GameState>()((set, get) => ({
   },
 
   dismissFeedback: () => set({ feedback: null }),
+
+  startMistakes: () => {
+    const { page } = get()
+    if (!page) return
+    const replay = getModel(page.template).meta.mistakeReplay ?? {}
+    // The replay loops until the student leaves the step.
+    set({
+      step: 'mistakes',
+      settings: { ...defaultSettings(page), ...replay, humanError: false },
+      run: { t: 0, duration: Infinity, running: true },
+      mistakeSelected: null,
+      feedback: null,
+    })
+  },
+
+  selectMistake: (id) => {
+    if (get().mistakesFound.includes(id)) return
+    set({ mistakeSelected: id, feedback: null })
+  },
+
+  answerMistake: (reason) => {
+    const { page, mistakeSelected: id, mistakeTries, mistakesFound, score } = get()
+    if (!page || !id) return
+    const m = page.mistakes.find((x) => x.id === id)
+    if (!m) return
+    if (reason !== m.answer) {
+      set({ mistakeTries: { ...mistakeTries, [id]: (mistakeTries[id] ?? 0) + 1 }, feedback: { kind: 'bad', key: 'result.wrong' } })
+      return
+    }
+    const pts = (mistakeTries[id] ?? 0) === 0 ? POINTS.mistakeFound : 0
+    const found = [...mistakesFound, id]
+    const newScore = addPoints(score, pts)
+    set({ mistakesFound: found, mistakeSelected: null, score: newScore, feedback: { kind: 'good', key: 'result.correct', points: pts || undefined } })
+    if (found.length === page.mistakes.length) {
+      const { predictionCorrect, formulaUnlocked } = get()
+      void saveProgress({
+        pageId: page.pageId,
+        completed: true,
+        predictionsCorrect: predictionCorrect ? 1 : 0,
+        pointsEarned: newScore,
+        formulaUnlocked,
+        mistakesFound: found.length,
+      })
+    }
+  },
+
+  endMistakes: () => {
+    const { page } = get()
+    if (!page) return
+    set({ step: 'done', run: idleRun, settings: defaultSettings(page), mistakeSelected: null })
+  },
 }))
